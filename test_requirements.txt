@@ -1,0 +1,11 @@
+mixer
+django-nose
+coverage
+django-coverage
+ipdb
+flake8
+fabric
+factory_boy
+mock
+selenium
+south
