@@ -2,6 +2,9 @@
 import os
 import logging
 
+from .local_settings import *  # NOQA
+
+
 DEBUG = True
 
 logging.getLogger("factory").setLevel(logging.WARN)
