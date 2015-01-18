@@ -28,14 +28,10 @@ class FreckleClient(object):
             post_args = {}
 
         # set content type and accept headers to handle JSON
-        if http_method in ("POST", "PUT", "DELETE"):
-            headers['Content-Type'] = 'application/json; charset=utf-8'
         headers['Accept'] = 'application/json'
         query_params['token'] = self.api_token
 
         # construct the full URL without query parameters
-        if uri_path[0] == '/':
-            uri_path = uri_path[1:]
         url = 'https://{0}.letsfreckle.com/api/{1}.json'.format(
             self.account_name, uri_path)
 

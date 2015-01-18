@@ -2,7 +2,7 @@
 import os
 import logging
 
-from .local_settings import *  # NOQA
+from freckle_budgets.tests.local_settings import *  # NOQA
 
 
 DEBUG = True
