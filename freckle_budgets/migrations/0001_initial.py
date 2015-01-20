@@ -1,103 +1,75 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Year'
-        db.create_table(u'freckle_budgets_year', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('year', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('rate', self.gf('django.db.models.fields.FloatField')(default=100)),
-            ('work_hours_per_day', self.gf('django.db.models.fields.FloatField')(default=5)),
-            ('sick_leave_days', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('vacation_days', self.gf('django.db.models.fields.PositiveIntegerField')()),
-        ))
-        db.send_create_signal(u'freckle_budgets', ['Year'])
+    dependencies = [
+    ]
 
-        # Adding model 'Month'
-        db.create_table(u'freckle_budgets_month', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('year', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['freckle_budgets.Year'])),
-            ('month', self.gf('django.db.models.fields.PositiveIntegerField')()),
-            ('employees', self.gf('django.db.models.fields.FloatField')(default=1)),
-            ('public_holidays', self.gf('django.db.models.fields.PositiveIntegerField')(default=0, null=True)),
-        ))
-        db.send_create_signal(u'freckle_budgets', ['Month'])
-
-        # Adding model 'Project'
-        db.create_table(u'freckle_budgets_project', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('freckle_project_id', self.gf('django.db.models.fields.CharField')(max_length=256, null=True)),
-            ('color', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('is_investment', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal(u'freckle_budgets', ['Project'])
-
-        # Adding model 'ProjectMonth'
-        db.create_table(u'freckle_budgets_projectmonth', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('project', self.gf('django.db.models.fields.related.ForeignKey')(related_name='project_months', to=orm['freckle_budgets.Project'])),
-            ('month', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['freckle_budgets.Month'])),
-            ('budget', self.gf('django.db.models.fields.FloatField')()),
-            ('rate', self.gf('django.db.models.fields.FloatField')()),
-        ))
-        db.send_create_signal(u'freckle_budgets', ['ProjectMonth'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'Year'
-        db.delete_table(u'freckle_budgets_year')
-
-        # Deleting model 'Month'
-        db.delete_table(u'freckle_budgets_month')
-
-        # Deleting model 'Project'
-        db.delete_table(u'freckle_budgets_project')
-
-        # Deleting model 'ProjectMonth'
-        db.delete_table(u'freckle_budgets_projectmonth')
-
-
-    models = {
-        u'freckle_budgets.month': {
-            'Meta': {'ordering': "['-year', 'month']", 'object_name': 'Month'},
-            'employees': ('django.db.models.fields.FloatField', [], {'default': '1'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'month': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'public_holidays': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0', 'null': 'True'}),
-            'year': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['freckle_budgets.Year']"})
-        },
-        u'freckle_budgets.project': {
-            'Meta': {'ordering': "['name']", 'object_name': 'Project'},
-            'color': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'freckle_project_id': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_investment': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        u'freckle_budgets.projectmonth': {
-            'Meta': {'ordering': "['-month', 'project']", 'object_name': 'ProjectMonth'},
-            'budget': ('django.db.models.fields.FloatField', [], {}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'month': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['freckle_budgets.Month']"}),
-            'project': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'project_months'", 'to': u"orm['freckle_budgets.Project']"}),
-            'rate': ('django.db.models.fields.FloatField', [], {})
-        },
-        u'freckle_budgets.year': {
-            'Meta': {'ordering': "['-year']", 'object_name': 'Year'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'rate': ('django.db.models.fields.FloatField', [], {'default': '100'}),
-            'sick_leave_days': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'vacation_days': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'work_hours_per_day': ('django.db.models.fields.FloatField', [], {'default': '5'}),
-            'year': ('django.db.models.fields.PositiveIntegerField', [], {})
-        }
-    }
-
-    complete_apps = ['freckle_budgets']
+    operations = [
+        migrations.CreateModel(
+            name='Month',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('month', models.PositiveIntegerField(verbose_name='Month')),
+                ('employees', models.FloatField(default=1, verbose_name='Number of employees')),
+                ('public_holidays', models.PositiveIntegerField(default=0, null=True, verbose_name='Public holydays')),
+            ],
+            options={
+                'ordering': ['-year', 'month'],
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Project',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=100, verbose_name='Name')),
+                ('freckle_project_id', models.CharField(max_length=256, null=True, verbose_name='Freckle project ID')),
+                ('color', models.CharField(max_length=100, verbose_name='Color')),
+                ('is_investment', models.BooleanField(default=False, verbose_name='Is investment')),
+            ],
+            options={
+                'ordering': ['name'],
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ProjectMonth',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('budget', models.FloatField(verbose_name='Budget')),
+                ('rate', models.FloatField(verbose_name='Rate')),
+                ('month', models.ForeignKey(verbose_name=b'Month', to='freckle_budgets.Month')),
+                ('project', models.ForeignKey(related_name='project_months', verbose_name=b'Project', to='freckle_budgets.Project')),
+            ],
+            options={
+                'ordering': ['-month', 'project'],
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Year',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('year', models.PositiveIntegerField(verbose_name='Year')),
+                ('rate', models.FloatField(default=100, verbose_name='Rate')),
+                ('work_hours_per_day', models.FloatField(default=5, verbose_name='Work hours per day')),
+                ('sick_leave_days', models.PositiveIntegerField(verbose_name='Sick leave days')),
+                ('vacation_days', models.PositiveIntegerField(verbose_name='Vacation days')),
+            ],
+            options={
+                'ordering': ['-year'],
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='month',
+            name='year',
+            field=models.ForeignKey(verbose_name='Year', to='freckle_budgets.Year'),
+            preserve_default=True,
+        ),
+    ]

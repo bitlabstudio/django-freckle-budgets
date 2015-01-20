@@ -76,3 +76,6 @@ If you want to contribute to this project, please perform the following steps
     git add . && git commit
     git push -u origin feature_branch
     # Send us a pull request for your feature branch
+
+In order to run the tests, simply execute ``tox``. It will create two more
+venvs and run tests against Django 1.6 and Django 1.7.
