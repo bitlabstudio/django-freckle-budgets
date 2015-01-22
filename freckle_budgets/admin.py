@@ -14,6 +14,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class ProjectMonthAdmin(admin.ModelAdmin):
     list_display = ['month', 'project', 'budget', 'rate']
+    list_filter = ['project', ]
 
 
 class YearAdmin(admin.ModelAdmin):
