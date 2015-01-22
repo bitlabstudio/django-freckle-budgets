@@ -46,6 +46,7 @@
         </div>
         <div class="col-sm-3 freckle-budgets-month-info">
             <p>Available ressources: {{ project_month.0.get_available_ressources|floatformat:2 }}</p>
+            <p>Work days: {{project_month.0.get_work_days|floatformat:2 }} </p>
             <hr />
             {% for project in project_month.0.get_cashflow_projects %}
                 <p><div class="freckle-budgets-project" style="background-color:{{ project.project.color }};" data-toggle="tooltip" title="{{ project.get_daily_hours|floatformat:2 }}h / day"></div> {{ project.project.name }}: {{ project.get_budget_hours|floatformat:2 }}h (S${{ project.budget }})</p>
