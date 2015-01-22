@@ -1,3 +1,7 @@
+=== 0.0.X (onggoing, to be released as 0.2) ===
+
+- Updated admins
+
 === 0.0.X (onggoing, to be released as 0.1) ===
 - Initial commit
 

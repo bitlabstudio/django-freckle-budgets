@@ -5,11 +5,11 @@ from . import models
 
 
 class MonthAdmin(admin.ModelAdmin):
-    list_display = ['year', 'month', ]
+    list_display = ['year', 'month', 'employees', 'public_holidays']
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['name', 'color', ]
+    list_display = ['name', 'freckle_project_id', 'color', 'is_investment']
 
 
 class ProjectMonthAdmin(admin.ModelAdmin):
