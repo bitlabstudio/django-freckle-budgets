@@ -74,6 +74,12 @@ class MonthTestCase(TestCase):
             ' leave, 19 days remain. Multiplied with the daily hours (5) and'
             ' number of employees (2), the result should be 19 * 5 * 2 = 190'))
 
+    def test_get_average_rate(self):
+        fixtures.create_project_months(self)
+        result = self.month.get_average_rate()
+        self.assertEqual(result, 100, msg=(
+            'Should divide the total profit by the total cashflow hours'))
+
     def test_get_cashflow_projects(self):
         fixtures.create_project_months(self)
         result = self.month.get_cashflow_projects()

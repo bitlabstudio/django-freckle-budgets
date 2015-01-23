@@ -58,6 +58,7 @@
                 <p><div class="freckle-budgets-project" style="background-color:{{ project.project.color }};" data-toggle="tooltip" title="{{ project.get_daily_hours|floatformat:2 }}h / day"></div> {{ project.project.name }}: {{ project.get_budget_hours|floatformat:2 }}h (S${{ project.budget }})</p>
             {% endfor %}
             <p>Total profit: {{ project_month.0.get_total_cashflow_hours|floatformat:2 }}h (S${{ project_month.0.get_total_profit }})</p>
+            <p>Average rate: S${{ project_month.0.get_average_rate|floatformat:2 }}/h</p>
             <hr />
             {% for project in project_month.0.get_investment_projects %}
                 <p><div class="freckle-budgets-project" style="background-color:{{ project.project.color }};" data-toggle="tooltip" title="{{ project.get_daily_hours|floatformat:2 }}h / day"></div> {{ project.project.name }}: {{ project.get_budget_hours|floatformat:2 }}h (S${{ project.budget }})</p>

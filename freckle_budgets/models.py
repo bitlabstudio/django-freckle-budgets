@@ -72,6 +72,10 @@ class Month(models.Model):
         work_hours = self.year.work_hours_per_day * work_days * self.employees
         return work_hours
 
+    def get_average_rate(self):
+        """Returns the average rate for all cashflow projects of this month."""
+        return self.get_total_profit() / self.get_total_cashflow_hours()
+
     def get_cashflow_projects(self):
         return ProjectMonth.objects.filter(month=self).exclude(
             project__is_investment=True).order_by('-budget', )
