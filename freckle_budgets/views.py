@@ -16,10 +16,9 @@ class YearView(TemplateView):
             account_name=settings.FRECKLE_BUDGETS_ACCOUNT_NAME,
             api_token=settings.FRECKLE_BUDGETS_API_TOKEN)
 
-        freckle_projects = models.ProjectMonth.objects.get_freckle_projects(
-            2015)
-        entries = api.get_entries(freckle_projects, '2015-01-01', '2015-12-31')
-        entries_times = freckle_api.get_project_times(entries)
+        projects = models.Project.objects.get_for_year(2015)
+        entries = api.get_entries(projects, '2015-01-01', '2015-12-31')
+        entries_times = freckle_api.get_project_times(projects, entries)
 
         ctx.update({
             'year': models.Year.objects.get(year=2015),

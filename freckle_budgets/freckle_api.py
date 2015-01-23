@@ -60,21 +60,23 @@ class FreckleClient(object):
                 'per_page': 1000,
                 'search[from]': start_date,
                 'search[to]': end_date,
-                'search[projects]': ','.join(projects),
+                'search[projects]': ','.join(
+                    [project.freckle_project_id for project in projects]),
             }
         )
         return entries
 
 
-def get_project_times(entries):
+def get_project_times(projects, entries):
     result = {}
     for entry in entries:
         entry_date = datetime.datetime.strptime(entry['entry']['date'], '%Y-%m-%d')
         if entry_date.month not in result:
             result[entry_date.month] = {}
         project_id = entry['entry']['project_id']
+        project = projects.get(freckle_project_id=project_id)
         if project_id not in result[entry_date.month]:
             result[entry_date.month][project_id] = 0
-        if entry['entry']['billable']:
+        if project.is_investment or entry['entry']['billable']:
             result[entry_date.month][project_id] += entry['entry']['minutes']
     return result

@@ -3,7 +3,9 @@ from django.test import TestCase
 
 from mock import MagicMock, patch
 
+from . import fixtures
 from .. import freckle_api
+from .. import models
 
 
 class FreckleClientTestCase(TestCase):
@@ -27,7 +29,11 @@ class FreckleClientTestCase(TestCase):
         with patch('freckle_budgets.freckle_api.requests.request') as request_mock:  # NOQA
             request_mock.return_value = MagicMock()
             request_mock.return_value.status_code = 200
-            client.get_entries(['proj1'], '2015-01-01', '2015-01-10')
+            request_mock.return_value.json = MagicMock()
+            request_mock.return_value.json.return_value = \
+                fixtures.get_api_response()
+            projects = models.Project.objects.get_for_year(2015)
+            client.get_entries(projects, '2015-01-01', '2015-01-10')
             self.assertEqual(request_mock.call_count, 1, msg=(
                 'Should call the Freckle API via the requests module'))
 
@@ -37,60 +43,15 @@ class GetProjectTimesTestCase(TestCase):
     longMessage = True
 
     def test_function(self):
-        entries = [
-            {
-                # First project, first month, billable hours
-                'entry': {
-                    'date': '2015-01-01',
-                    'project_id': 'proj1',
-                    'billable': True,
-                    'minutes': 1,
-                }
-            },
-            {
-                # Unbillable hours should not be added up
-                'entry': {
-                    'date': '2015-01-01',
-                    'project_id': 'proj1',
-                    'billable': False,
-                    'minutes': 2,
-                }
-            },
-            {
-                # Billable hours should be added up
-                'entry': {
-                    'date': '2015-01-02',
-                    'project_id': 'proj1',
-                    'billable': True,
-                    'minutes': 4,
-                }
-            },
-            {
-                # Another project in the same month
-                'entry': {
-                    'date': '2015-01-02',
-                    'project_id': 'proj2',
-                    'billable': True,
-                    'minutes': 8,
-                }
-            },
-            {
-                # Another month
-                'entry': {
-                    'date': '2015-02-01',
-                    'project_id': 'proj2',
-                    'billable': True,
-                    'minutes': 16,
-                }
-            },
-        ]
+        entries = fixtures.get_api_response()
+        projects = models.Project.objects.get_for_year(2015)
 
         expected = {
             1: {'proj1': 5, 'proj2': 8, },
-            2: {'proj2': 16}
+            2: {'proj2': 16, 'proj3': 32, },
         }
 
-        result = freckle_api.get_project_times(entries)
+        result = freckle_api.get_project_times(projects, entries)
         self.assertEqual(result, expected, msg=(
             'Should turn the list of entries into a dict that has months as'
             ' keys and each month is a dict that has project IDs as keys and'

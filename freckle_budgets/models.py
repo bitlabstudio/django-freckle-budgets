@@ -129,6 +129,14 @@ class Month(models.Model):
         return work_days
 
 
+class ProjectManager(models.Manager):
+    def get_for_year(self, year):
+        qs = self.get_queryset()
+        qs = qs.filter(
+            project_months__month__year__year__exact=year).distinct()
+        return qs
+
+
 @python_2_unicode_compatible
 class Project(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('Name'))
@@ -137,6 +145,8 @@ class Project(models.Model):
     color = models.CharField(max_length=100, verbose_name=_('Color'))
     is_investment = models.BooleanField(
         default=False, verbose_name=_('Is investment'))
+
+    objects = ProjectManager()
 
     class Meta:
         ordering = ['name', ]
