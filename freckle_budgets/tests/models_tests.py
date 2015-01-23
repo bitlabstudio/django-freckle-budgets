@@ -19,6 +19,26 @@ class YearTestCase(TestCase):
         self.assertEqual(obj.__str__(), str(obj.year), msg=(
             '__str__ should return correct string'))
 
+    def test_get_total_cashflow_budget(self):
+        fixtures.create_project_months(self)
+        result = self.year.get_total_cashflow_budget()
+        self.assertEqual(result, 3000, msg=(
+            'Should add up all planned budgets for all projects that have'
+            ' is_investment==False for this year'))
+
+    def test_get_total_investment_budget(self):
+        fixtures.create_project_months(self)
+        result = self.year.get_total_investment_budget()
+        self.assertEqual(result, 4000, msg=(
+            'Should add up all planned budgets for all projects that have'
+            ' is_investment==True for this year'))
+
+    def test_get_total_unused_budget(self):
+        fixtures.create_project_months(self)
+        result = self.year.get_total_unused_budget()
+        self.assertEqual(result, 31000, msg=(
+            'Should add up all unused budgets for all months of the year'))
+
 
 class MonthManagerTestCase(TestCase):
     """Tests for the ``MonthManager`` model manager."""
@@ -26,11 +46,11 @@ class MonthManagerTestCase(TestCase):
 
     def test_get_months_with_projects(self):
         fixtures.create_project_months(self)
-        mixer.blend('freckle_budgets.Month', month=2, year__year=2015)
+        mixer.blend('freckle_budgets.Month', month=3, year=self.year)
 
         manager = models.Month.objects
         result = manager.get_months_with_projects(2015)
-        self.assertEqual(result.count(), 1, msg=(
+        self.assertEqual(result.count(), 2, msg=(
             'Should return all months that have a project'))
 
 
@@ -88,7 +108,7 @@ class MonthTestCase(TestCase):
     def test_get_total_investment_hours(self):
         fixtures.create_project_months(self)
         result = self.month.get_total_investment_hours()
-        self.assertEqual(result, 10, msg=(
+        self.assertEqual(result, 20, msg=(
             'Should add up all budget hours for each investment project (the'
             ' hours that can be spend on projects for the given budget and'
             ' rate)'))
@@ -96,7 +116,7 @@ class MonthTestCase(TestCase):
     def test_get_total_investment(self):
         fixtures.create_project_months(self)
         result = self.month.get_total_investment()
-        self.assertEqual(result, 2000, msg=(
+        self.assertEqual(result, 4000, msg=(
             'Should add up all budgets for all investment projects.'))
 
     def test_get_total_profit(self):
@@ -108,7 +128,7 @@ class MonthTestCase(TestCase):
     def test_get_unused_hours(self):
         fixtures.create_project_months(self)
         result = self.month.get_unused_hours()
-        self.assertEqual(result, 170, msg=(
+        self.assertEqual(result, 160, msg=(
             'Should add up all budget hours for all projects in this month,'
             ' then substract this from the total available ressources of this'
             ' month.'))
@@ -116,14 +136,14 @@ class MonthTestCase(TestCase):
     def test_get_unused_daily_hours(self):
         fixtures.create_project_months(self)
         result = self.month.get_unused_daily_hours()
-        self.assertEqual(result, 170.0 / 19, msg=(
+        self.assertEqual(result, 160.0 / 19, msg=(
             'Should take the total unused hours and divide them by the number'
             ' of work days in this month'))
 
     def test_get_unused_budget(self):
         fixtures.create_project_months(self)
         result = self.month.get_unused_budget()
-        self.assertEqual(result, 170.0 * 100, msg=(
+        self.assertEqual(result, 160.0 * 100, msg=(
             'Should multiply the unused hours with the default rate for this'
             ' year.'))
 
@@ -204,15 +224,15 @@ class ProjectMonthTestCase(TestCase):
 
     def test_get_budget_hours(self):
         fixtures.create_project_months(self)
-        result = self.project_month1.get_budget_hours()
-        expected = self.project_month1.budget / self.project_month1.rate
+        result = self.project_month1_1.get_budget_hours()
+        expected = self.project_month1_1.budget / self.project_month1_1.rate
         self.assertEqual(result, expected, msg=(
             'Should return the hours that can be worked on this project given'
             ' the budget and hourly rate'))
 
     def test_get_daily_hours(self):
         fixtures.create_project_months(self)
-        pm = self.project_month1
+        pm = self.project_month1_1
         result = pm.get_daily_hours()
         expected = pm.get_budget_hours() / pm.month.get_work_days()
         self.assertEqual(result, expected, msg=(

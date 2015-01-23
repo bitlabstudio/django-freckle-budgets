@@ -4,6 +4,12 @@
 {% block main %}
 <h1>{% trans "Budgets:" %} {{ year.year }}</h1>
 
+<p>Total cashflow budget: S${{ year.get_total_cashflow_budget|floatformat:2 }}</p>
+<p>Total investment budget: S${{ year.get_total_investment_budget|floatformat:2 }}</p>
+<p>Total unused budget: S${{ year.get_total_unused_budget|floatformat:2 }}</p>
+
+<hr />
+
 {% for project_month in project_months %}
     <h2>{{ project_month.0.get_date|date:"F" }}</h2>
     <div class="row">

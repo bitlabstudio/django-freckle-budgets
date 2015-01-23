@@ -4,25 +4,35 @@ from mixer.backend.django import mixer
 
 def create_month(cls):
     """Creates one ``Month`` object."""
+    cls.year = mixer.blend(
+        'freckle_budgets.Year', year=2015, sick_leave_days=12,
+        vacation_days=12, rate=100)
     cls.month = mixer.blend(
-        'freckle_budgets.Month', month=1, year__year=2015,
-        year__sick_leave_days=12, year__vacation_days=12, year__rate=100,
-        public_holidays=1, employees=2)
+        'freckle_budgets.Month', month=1, year=cls.year, public_holidays=1,
+        employees=2)
 
 
 def create_project_months(cls):
     """Creates two ``ProjectMonth`` objects."""
     create_month(cls)
+    cls.month2 = mixer.blend(
+        'freckle_budgets.Month', month=2, year=cls.year, public_holidays=1,
+        employees=2)
     cls.proj1 = mixer.blend(
         'freckle_budgets.Project', is_investment=False, freckle_project_id='1')
     cls.proj2 = mixer.blend(
         'freckle_budgets.Project', is_investment=True, freckle_project_id='2')
-    cls.project_month1 = mixer.blend(
+
+    cls.project_month1_1 = mixer.blend(
         'freckle_budgets.ProjectMonth', project=cls.proj1,
         month=cls.month, budget=1000, rate=100, )
-    cls.project_month2 = mixer.blend(
+    cls.project_month2_1 = mixer.blend(
+        'freckle_budgets.ProjectMonth', project=cls.proj1,
+        month=cls.month2, budget=2000, rate=100, )
+
+    cls.project_month1_2 = mixer.blend(
         'freckle_budgets.ProjectMonth', project=cls.proj2,
-        month=cls.month, budget=2000, rate=200, )
+        month=cls.month, budget=4000, rate=200, )
 
 
 def get_api_response():

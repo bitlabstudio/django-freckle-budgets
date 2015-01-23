@@ -3,6 +3,7 @@ import calendar
 import datetime
 
 from django.db import models
+from django.db.models import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 
@@ -23,6 +24,22 @@ class Year(models.Model):
 
     def __str__(self):
         return str(self.year)
+
+    def get_total_cashflow_budget(self):
+        return ProjectMonth.objects.filter(
+            month__year=self, project__is_investment=False).aggregate(
+                Sum('budget'))['budget__sum']
+
+    def get_total_investment_budget(self):
+        return ProjectMonth.objects.filter(
+            month__year=self, project__is_investment=True).aggregate(
+                Sum('budget'))['budget__sum']
+
+    def get_total_unused_budget(self):
+        result = 0
+        for month in Month.objects.filter(year=self):
+            result += month.get_unused_budget()
+        return result
 
 
 class MonthManager(models.Manager):
