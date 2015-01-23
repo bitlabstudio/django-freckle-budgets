@@ -10,6 +10,18 @@ register = template.Library()
 
 
 @register.assignment_tag
+def get_hours_left(project_month, entries_times):
+    """Returns the hours left in order to fulfill the budget time."""
+    budget_hours = project_month.get_budget_hours()
+    try:
+        time_tracked = entries_times[project_month.month.month][
+            int(project_month.project.freckle_project_id)]
+    except KeyError:
+        return budget_hours
+    return (budget_hours * 60.0 - time_tracked) / 60.0
+
+
+@register.assignment_tag
 def get_weeks(month):
     """Returns the days for a month as a list of weeks."""
     return calendar.Calendar(0).monthdatescalendar(

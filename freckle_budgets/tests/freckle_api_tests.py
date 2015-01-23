@@ -31,8 +31,8 @@ class FreckleClientTestCase(TestCase):
             request_mock.return_value.status_code = 200
             request_mock.return_value.json = MagicMock()
             request_mock.return_value.json.return_value = \
-                fixtures.get_api_response()
-            projects = models.Project.objects.get_for_year(2015)
+                fixtures.get_api_response(self)
+            projects = models.Project.objects.get_for_year(self.year.year)
             client.get_entries(projects, '2015-01-01', '2015-01-10')
             self.assertEqual(request_mock.call_count, 1, msg=(
                 'Should call the Freckle API via the requests module'))
@@ -43,12 +43,12 @@ class GetProjectTimesTestCase(TestCase):
     longMessage = True
 
     def test_function(self):
-        entries = fixtures.get_api_response()
-        projects = models.Project.objects.get_for_year(2015)
+        entries = fixtures.get_api_response(self)
+        projects = models.Project.objects.get_for_year(self.year.year)
 
         expected = {
-            1: {'proj1': 5, 'proj2': 8, },
-            2: {'proj2': 16, 'proj3': 32, },
+            1: {111: 5, 222: 8, },
+            2: {222: 16, 333: 32, },
         }
 
         result = freckle_api.get_project_times(projects, entries)

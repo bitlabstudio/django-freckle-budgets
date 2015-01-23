@@ -35,28 +35,47 @@ def create_project_months(cls):
         month=cls.month, budget=4000, rate=200, )
 
 
-def get_api_response():
+def get_api_response(cls):
     """
     Returns a typical freckle API response and creates necessary objects.
 
     """
-    year = mixer.blend('freckle_budgets.Year', year=2015)
-    mixer.blend(
-        'freckle_budgets.ProjectMonth', project__freckle_project_id='proj1',
-        month__year=year)
-    mixer.blend(
-        'freckle_budgets.ProjectMonth', project__freckle_project_id='proj2',
-        month__year=year)
-    mixer.blend(
-        'freckle_budgets.ProjectMonth', project__freckle_project_id='proj3',
-        project__is_investment=True, month__year=year)
+    cls.year = mixer.blend('freckle_budgets.Year', year=2015)
+    cls.month1 = mixer.blend('freckle_budgets.Month', month=1, year=cls.year)
+    cls.month2 = mixer.blend('freckle_budgets.Month', month=2, year=cls.year)
+    cls.proj1 = mixer.blend(
+        'freckle_budgets.Project', freckle_project_id='111')
+    cls.proj2 = mixer.blend(
+        'freckle_budgets.Project', freckle_project_id='222')
+    cls.proj3 = mixer.blend(
+        'freckle_budgets.Project', freckle_project_id='333',
+        is_investment=True)
+
+    cls.proj1_month1 = mixer.blend(
+        'freckle_budgets.ProjectMonth', project=cls.proj1, month=cls.month1,
+        budget=1000, rate=100)
+    cls.proj1_month2 = mixer.blend(
+        'freckle_budgets.ProjectMonth', project=cls.proj1, month=cls.month2,
+        budget=1000, rate=100)
+    cls.proj2_month1 = mixer.blend(
+        'freckle_budgets.projectmonth', project=cls.proj2, month=cls.month1,
+        budget=2000, rate=200)
+    cls.proj2_month2 = mixer.blend(
+        'freckle_budgets.projectmonth', project=cls.proj2, month=cls.month2,
+        budget=2000, rate=200)
+    cls.proj3_month1 = mixer.blend(
+        'freckle_budgets.ProjectMonth', project=cls.proj3, month=cls.month1,
+        budget=4000, rate=400)
+    cls.proj3_month2 = mixer.blend(
+        'freckle_budgets.ProjectMonth', project=cls.proj3, month=cls.month2,
+        budget=4000, rate=400)
 
     entries = [
         {
             # First project, first month, billable hours
             'entry': {
                 'date': '2015-01-01',
-                'project_id': 'proj1',
+                'project_id': 111,
                 'billable': True,
                 'minutes': 1,
             }
@@ -65,7 +84,7 @@ def get_api_response():
             # Unbillable hours should not be added up
             'entry': {
                 'date': '2015-01-01',
-                'project_id': 'proj1',
+                'project_id': 111,
                 'billable': False,
                 'minutes': 2,
             }
@@ -73,8 +92,8 @@ def get_api_response():
         {
             # Billable hours should be added up
             'entry': {
-                'date': '2015-01-02',
-                'project_id': 'proj1',
+                'date': '2015-01-01',
+                'project_id': 111,
                 'billable': True,
                 'minutes': 4,
             }
@@ -82,8 +101,8 @@ def get_api_response():
         {
             # Another project in the same month
             'entry': {
-                'date': '2015-01-02',
-                'project_id': 'proj2',
+                'date': '2015-01-01',
+                'project_id': 222,
                 'billable': True,
                 'minutes': 8,
             }
@@ -92,7 +111,7 @@ def get_api_response():
             # Another month
             'entry': {
                 'date': '2015-02-01',
-                'project_id': 'proj2',
+                'project_id': 222,
                 'billable': True,
                 'minutes': 16,
             }
@@ -101,7 +120,7 @@ def get_api_response():
             # Unbillable hours for investment projects should be added up
             'entry': {
                 'date': '2015-02-01',
-                'project_id': 'proj3',
+                'project_id': 333,
                 'billable': False,
                 'minutes': 32,
             }

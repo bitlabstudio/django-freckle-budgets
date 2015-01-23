@@ -4,9 +4,45 @@ import datetime
 
 from django.test import TestCase
 
+from mock import MagicMock, patch
+
 from mixer.backend.django import mixer
 
+from . import fixtures
+from .. import models
+from .. import freckle_api
 from ..templatetags import freckle_budgets_tags as tags
+
+
+class GetHoursLeftTestCase(TestCase):
+    """Tests for the ``get_hours_left`` templatetag."""
+    longMessage = True
+
+    def test_tag(self):
+        with patch('freckle_budgets.freckle_api.requests.request') as request_mock:  # NOQA
+            request_mock.return_value = MagicMock()
+            request_mock.return_value.status_code = 200
+            request_mock.return_value.json = MagicMock()
+            request_mock.return_value.json.return_value = \
+                fixtures.get_api_response(self)
+
+            projects = models.Project.objects.get_for_year(self.year.year)
+            client = freckle_api.FreckleClient('foobar', 'token')
+            entries = client.get_entries(projects, '2015-0101', '2015-12-31')
+            entries_times = freckle_api.get_project_times(projects, entries)
+
+            # this should be month2, proj2
+            result = tags.get_hours_left(
+                self.proj2_month2, entries_times)
+            self.assertEqual(round(result, 2), 9.73, msg=(
+                'Should substract the tracked hours from the total budget'
+                ' hours'))
+
+            result = tags.get_hours_left(
+                self.proj3_month1, entries_times)
+            self.assertEqual(round(result, 2), 10.00, msg=(
+                'Should not crash if for the given projects no freckle'
+                ' timings are present'))
 
 
 class GetWeeksTestCase(TestCase):
