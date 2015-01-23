@@ -19,5 +19,5 @@ class YearViewTestCase(TestCase):
             request_mock.return_value.json.return_value = \
                 fixtures.get_api_response()
             req = RequestFactory().get('/')
-            resp = views.YearView.as_view()(req)
+            resp = views.YearView.as_view()(req, year=2015)
             self.assertEqual(resp.status_code, 200, msg=('View is callable'))
