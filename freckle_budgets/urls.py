@@ -6,5 +6,5 @@ from . import views
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.YearView.as_view(), name='freckle_budgets_year_view'),
+    url(r'^(?P<year>\d+)$', views.YearView.as_view(), name='freckle_budgets_year_view'),
 )
