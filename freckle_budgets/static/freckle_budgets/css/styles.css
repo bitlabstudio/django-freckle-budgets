@@ -13,10 +13,6 @@
     background-color: #F5F5F5;
 }
 
-.freckle-budgets-table td {
-
-}
-
 .freckle-budgets-table-cell {
     width: 100%;
 }
@@ -29,6 +25,10 @@
     font-size: 9px;
     width: 15px;
     vertical-align: top;
+}
+
+.freckle-budgets-date-unavailable {
+    background: #EFEFEF;
 }
 
 .freckle-budgets-project {

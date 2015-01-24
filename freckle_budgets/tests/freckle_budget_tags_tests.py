@@ -57,6 +57,36 @@ class GetWeeksTestCase(TestCase):
             'Should return a list of weeks. Each list is a list of days'))
 
 
+class IsAvailableWorkdayTestCase(TestCase):
+    """Tests for the ``is_available_workday`` assignment tag."""
+    longMessage = True
+
+    def test_tag(self):
+        year = mixer.blend('freckle_budgets.Year', year=2015,
+            sick_leave_days=12, vacation_days=24)
+        month = mixer.blend('freckle_budgets.Month', year=year,
+            month=1, public_holidays=1)
+        day = datetime.date(2015, 1, 1)
+        result = tags.is_available_workday(day, month)
+        self.assertTrue(result, msg=(
+            'The first day of the month should obviously be shown as an'
+            ' available workday'))
+
+        day = datetime.date(2015, 1, 26)
+        result = tags.is_available_workday(day, month)
+        self.assertTrue(result, msg=(
+            'January has 22 work days. Minus 2 vacation days and one'
+            ' sick-leave day and one public holiday, we are left with 18'
+            ' available work days. Therefore, the 26th (which is the 18th'
+            ' workday) should be available.'))
+
+        day = datetime.date(2015, 1, 27)
+        result = tags.is_available_workday(day, month)
+        self.assertFalse(result, msg=(
+            'Based on the calculation above, the 27th should be the first'
+            ' workday that is no longer available'))
+
+
 class IsBudgetFulfilledTestCase(TestCase):
     """Tests for the ``is_budget_fulfilled`` assignment tag."""
     longMessage = True

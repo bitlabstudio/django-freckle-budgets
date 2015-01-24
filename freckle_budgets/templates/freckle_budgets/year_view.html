@@ -29,7 +29,8 @@
                     {% for week in weeks %}
                         <tr>
                             {% for day in week|slice:":5" %}
-                                <td>
+                                {% is_available_workday day project_month.0 as is_available_workday_ %}
+                                <td class="{% if not is_available_workday_ %}freckle-budgets-date-unavailable{% endif %}">
                                     <table class="freckle-budgets-table-cell">
                                         <tr>
                                             <td class="freckle-budgets-date {% if day.month != project_month.0.month %}text-muted-lighter{% endif %}">{{ day|date:"j" }}</td>

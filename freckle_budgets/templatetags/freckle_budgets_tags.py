@@ -29,6 +29,24 @@ def get_weeks(month):
 
 
 @register.assignment_tag
+def is_available_workday(day, month):
+    """
+    ``True`` if the given day is available as a workday in the given month.
+
+    Example: January has 22 workdays. If you deduct vacation-days and
+    sick-leave-days and public holidays, you might end up with 18 available
+    work days.
+
+    We want to render the last 4 days of the month differently to show that
+    these days are work days but they might not be actually available.
+
+    """
+    work_days = month.get_work_days()
+    workday = utils.get_workday_number(day)
+    return workday <= work_days
+
+
+@register.assignment_tag
 def is_budget_fulfilled(entries_times, project, day):
     try:
         total_time = entries_times[project.month.month][
