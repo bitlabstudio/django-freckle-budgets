@@ -4,6 +4,15 @@ from django.contrib import admin
 from . import models
 
 
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'freckle_id']
+
+
+class EmployeeProjectMonthAdmin(admin.ModelAdmin):
+    list_display = ['project_month', 'employee', 'responsibility']
+    raw_id_fields = ['project_month']
+
+
 class MonthAdmin(admin.ModelAdmin):
     list_display = ['year', 'month', 'employees', 'public_holidays']
 
@@ -21,6 +30,8 @@ class YearAdmin(admin.ModelAdmin):
     list_display = ['year', 'sick_leave_days', 'vacation_days']
 
 
+admin.site.register(models.Employee, EmployeeAdmin)
+admin.site.register(models.EmployeeProjectMonth, EmployeeProjectMonthAdmin)
 admin.site.register(models.Month, MonthAdmin)
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.ProjectMonth, ProjectMonthAdmin)

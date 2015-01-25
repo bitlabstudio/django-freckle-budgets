@@ -9,6 +9,18 @@ from django.utils.encoding import python_2_unicode_compatible
 
 
 @python_2_unicode_compatible
+class Employee(models.Model):
+    name = models.CharField(max_length=256, verbose_name=_('Name'))
+    freckle_id = models.CharField(max_length=256, verbose_name=_('Freckle ID'))
+
+    class Meta:
+        ordering = ['name', ]
+
+    def __str__(self):
+        return str(self.name)
+
+
+@python_2_unicode_compatible
 class Year(models.Model):
     year = models.PositiveIntegerField(verbose_name=_('Year'))
     rate = models.FloatField(default=100, verbose_name=_('Rate'))
@@ -216,3 +228,22 @@ class ProjectMonth(models.Model):
         """Returns the daily hours needed in order to use up the budget."""
         budget_hours = self.get_budget_hours()
         return budget_hours / self.month.get_work_days()
+
+
+@python_2_unicode_compatible
+class EmployeeProjectMonth(models.Model):
+    project_month = models.ForeignKey(
+        ProjectMonth, verbose_name=_('ProjectMonth'),
+        related_name='employee_project_months')
+    employee = models.ForeignKey(
+        Employee, verbose_name=_('Employee'),
+        related_name='employee_project_months')
+    responsibility = models.PositiveIntegerField(
+        verbose_name=_('Responsibility'),
+        help_text=_('Positive integer (1-100%)'))
+
+    class Meta:
+        ordering = ['project_month__project', 'employee']
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.project_month, self.employee)

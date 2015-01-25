@@ -9,6 +9,17 @@ from . import fixtures
 from .. import models
 
 
+class EmployeeTestCase(TestCase):
+    """Tests for the ``Employee`` model."""
+    longMessage = True
+
+    def test_class(self):
+        obj = mixer.blend('freckle_budgets.Employee')
+        self.assertTrue(obj.pk, msg=('Object can be saved'))
+        self.assertEqual(obj.__str__(), str(obj.name), msg=(
+            '__str__ should return correct string'))
+
+
 class YearTestCase(TestCase):
     """Tests for the ``Year`` model."""
     longMessage = True
@@ -244,3 +255,16 @@ class ProjectMonthTestCase(TestCase):
         self.assertEqual(result, expected, msg=(
             'Should return the daily hours that need to be worked on this'
             ' given the project budget, rate and work days of this month.'))
+
+
+class EmployeeProjectMonthTestCase(TestCase):
+    """Tests for the ``EmployeeProjectMonth`` model."""
+    longMessage = True
+
+    def test_model(self):
+        obj = mixer.blend('freckle_budgets.EmployeeProjectMonth')
+        self.assertTrue(obj.pk, msg=('Object can be saved'))
+
+        expected = '{0} - {1}'.format(obj.project_month, obj.employee)
+        self.assertEqual(obj.__str__(), expected, msg=(
+            '__str__ should return correct string'))
