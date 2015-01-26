@@ -35,6 +35,22 @@ def create_project_months(cls):
         month=cls.month, budget=4000, rate=200, )
 
 
+def create_employee_project_months(cls):
+    """Creates fixtures that allows to calculate an employees workload."""
+    create_project_months(cls)
+    cls.employee1 = mixer.blend('freckle_budgets.Employee')
+    cls.employee_project_month = mixer.blend(
+        'freckle_budgets.EmployeeProjectMonth',
+        project_month=cls.project_month1_1, employee=cls.employee1,
+        responsibility=100)
+
+    cls.employee2 = mixer.blend('freckle_budgets.Employee')
+    cls.employee_project_month = mixer.blend(
+        'freckle_budgets.EmployeeProjectMonth',
+        project_month=cls.project_month1_2, employee=cls.employee2,
+        responsibility=50)
+
+
 def get_api_response(cls):
     """
     Returns a typical freckle API response and creates necessary objects.

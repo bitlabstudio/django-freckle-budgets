@@ -57,6 +57,31 @@ class GetWeeksTestCase(TestCase):
             'Should return a list of weeks. Each list is a list of days'))
 
 
+class GetWorkloadsTestCase(TestCase):
+    """Tests for the ``get_workloads`` assignment tag."""
+    longMessage = True
+
+    def test_tag(self):
+        month = mixer.blend('freckle_budgets.Month', year__year=2015, month=1)
+        result = tags.get_workloads(month)
+        self.assertEqual(result, {}, msg=(
+            'Should call the same method on the model instance'))
+
+
+class GetWorkloadTestCase(TestCase):
+    """Tests for the ``get_workload`` assignment tag."""
+    longMessage = True
+
+    def test_tag(self):
+        workloads = {
+            '123': {'name': 'Foobar'}
+        }
+        result = tags.get_workload(workloads, '123')
+        self.assertEqual(result, workloads['123'], msg=(
+            'Should return the item with the given key from the workloads'
+            ' dict'))
+
+
 class IsAvailableWorkdayTestCase(TestCase):
     """Tests for the ``is_available_workday`` assignment tag."""
     longMessage = True

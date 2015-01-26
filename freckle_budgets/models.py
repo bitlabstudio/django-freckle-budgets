@@ -161,6 +161,59 @@ class Month(models.Model):
         work_days -= self.year.vacation_days / 12
         return work_days
 
+    def get_workloads(self):
+        """
+        Returns the workload for all employees for this month.
+
+        The workload is an amount of hours that the employee needs to work per
+        available work day in order to meet all planned budgets.
+
+        The workload is calculated as follows:
+
+        * Project1: Budget = 1000
+        * Project1: Rate = 100
+        * Project1: Budget time = 10 hours
+        * Employee responsibility for the project: 50%
+        * Available work days for the month: 18
+        * Employee work load = 10 / 18 * 0.5 = 0.28
+
+        The result looks like this:
+
+            {
+                employee_freckle_id: {
+                    'name': Heino,
+                    'cashflow_workload': 4,
+                    'investment_workload': 2,
+                    'total_workload': 6,
+                },
+                employee_freckle_id: { ... },
+                ...
+            }
+
+        """
+        result = {}
+        employee_project_months = EmployeeProjectMonth.objects.filter(
+            project_month__month=self)
+        for epm in employee_project_months:
+            if epm.employee.freckle_id not in result:
+                result[epm.employee.freckle_id] = {
+                    'name': epm.employee.name,
+                    'cashflow_workload': 0,
+                    'investment_workload': 0,
+                    'total_workload': 0,
+                }
+
+            daily_hours = epm.project_month.get_daily_hours()
+            if epm.project_month.project.is_investment:
+                key = 'investment_workload'
+            else:
+                key = 'cashflow_workload'
+
+            workload = daily_hours * (epm.responsibility / 100.0)
+            result[epm.employee.freckle_id][key] += workload
+            result[epm.employee.freckle_id]['total_workload'] += workload
+        return result
+
 
 class ProjectManager(models.Manager):
     def get_for_year(self, year):

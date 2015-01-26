@@ -178,6 +178,23 @@ class MonthTestCase(TestCase):
             ' vacation day (12 / 12). Minus one sick leave day (12 / 12).'
             ' Therefore, the result should be 22 - 1 - 1 -1 = 19'))
 
+    def test_get_workload(self):
+        fixtures.create_employee_project_months(self)
+        result = self.month.get_workloads()
+        expected = self.project_month1_1.get_daily_hours()
+        self.assertEqual(
+            result[self.employee1.freckle_id]['cashflow_workload'], expected,
+            msg=('When the employee has 100% responsibility for the project,'
+                 ' the result should equal the daily hours for that project'
+                 ' in this month'))
+
+        expected = self.project_month1_2.get_daily_hours() * 0.5
+        self.assertEqual(
+            result[self.employee2.freckle_id]['investment_workload'], expected,
+            msg=('When the employee has 50% responsibility for the project,'
+                 ' the result should equal 50% of the daily hours for that'
+                 ' project in this month'))
+
 
 class ProjectManagerTestCase(TestCase):
     """Tests for the ``ProjectManager`` model manager."""

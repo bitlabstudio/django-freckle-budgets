@@ -50,6 +50,29 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Cashflow workload</th>
+                        <th>Investment workload</th>
+                        <th>Total workload</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% get_workloads project_month.0 as workloads %}
+                    {% for workload in workloads %}
+                        {% get_workload workloads workload as workload_ %}
+                        <tr>
+                            <th>{{ workload_.name }}</th>
+                            <td>{{ workload_.cashflow_workload|floatformat:2 }}</td>
+                            <td>{{ workload_.investment_workload|floatformat:2 }}</td>
+                            <td>{{ workload_.total_workload|floatformat:2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
         <div class="col-sm-3 freckle-budgets-month-info">
             <p>Available ressources: {{ project_month.0.get_available_ressources|floatformat:2 }}</p>

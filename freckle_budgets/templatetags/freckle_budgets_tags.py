@@ -29,6 +29,24 @@ def get_weeks(month):
 
 
 @register.assignment_tag
+def get_workloads(month):
+    """Calls the same method on the Month model."""
+    return month.get_workloads()
+
+
+@register.assignment_tag
+def get_workload(workloads, workload):
+    """
+    Returns the item from the dict with the given key.
+
+    Somehow this doesn't seem to work via normal templating language in this
+    case.
+
+    """
+    return workloads[workload]
+
+
+@register.assignment_tag
 def is_available_workday(day, month):
     """
     ``True`` if the given day is available as a workday in the given month.
