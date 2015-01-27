@@ -13,6 +13,10 @@ class EmployeeProjectMonthAdmin(admin.ModelAdmin):
     raw_id_fields = ['project_month']
 
 
+class EmployeeProjectMonthInline(admin.TabularInline):
+    model = models.EmployeeProjectMonth
+
+
 class MonthAdmin(admin.ModelAdmin):
     list_display = ['year', 'month', 'employees', 'public_holidays']
 
@@ -24,6 +28,7 @@ class ProjectAdmin(admin.ModelAdmin):
 class ProjectMonthAdmin(admin.ModelAdmin):
     list_display = ['month', 'project', 'budget', 'rate']
     list_filter = ['project', ]
+    inlines = [EmployeeProjectMonthInline, ]
 
 
 class YearAdmin(admin.ModelAdmin):
