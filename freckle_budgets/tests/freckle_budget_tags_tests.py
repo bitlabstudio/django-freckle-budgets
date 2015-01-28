@@ -97,19 +97,17 @@ class IsAvailableWorkdayTestCase(TestCase):
             'The first day of the month should obviously be shown as an'
             ' available workday'))
 
-        day = datetime.date(2015, 1, 26)
+        day = datetime.date(2015, 1, 29)
         result = tags.is_available_workday(day, month)
         self.assertTrue(result, msg=(
-            'January has 22 work days. Minus 2 vacation days and one'
-            ' sick-leave day and one public holiday, we are left with 18'
-            ' available work days. Therefore, the 26th (which is the 18th'
-            ' workday) should be available.'))
+            'January has 22 work days. Minus one public holiday, so we are'
+            ' left with 21 available work days. Therefore, the 29th (which is'
+            ' the 21st workday) should be available.'))
 
-        day = datetime.date(2015, 1, 27)
+        day = datetime.date(2015, 1, 30)
         result = tags.is_available_workday(day, month)
         self.assertFalse(result, msg=(
-            'Based on the calculation above, the 27th should be the first'
-            ' workday that is no longer available'))
+            'Based on the calculation above, the 30th should be unavailable'))
 
 
 class IsBudgetFulfilledTestCase(TestCase):

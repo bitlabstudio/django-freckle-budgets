@@ -84,6 +84,17 @@ class Month(models.Model):
         work_hours = self.year.work_hours_per_day * work_days * self.employees
         return work_hours
 
+    def get_available_ressources_max(self):
+        """Returns the available hours that the team can work this month."""
+        work_days = self.get_work_days(
+            minus_sick_leave=False, minus_vacations=False)
+        work_hours = self.year.work_hours_per_day * work_days * self.employees
+        return work_hours
+
+    def get_available_ressources_max_per_person(self):
+        """Returns the hours that each employee should work this month."""
+        return self.get_available_ressources_max() / self.employees * 1.0
+
     def get_average_rate(self):
         """Returns the average rate for all cashflow projects of this month."""
         return self.get_total_profit() / self.get_total_cashflow_hours()
@@ -154,12 +165,33 @@ class Month(models.Model):
                 weekdays += 1
         return weekdays
 
-    def get_work_days(self):
+    def get_work_days(self, minus_sick_leave=True, minus_vacations=True):
+        """
+        Returns the work days that should be used in whole-year-calculations.
+
+        Public holidays, sick leave days and vacation days will be deducted.
+
+        :minus_sick_leave: If ``False``, sick leave will not be deducted from
+          the total work days.
+        :minus_vacations: If ``False``, vacations will not be deducted from
+          the total work days.
+
+        """
         work_days = self.get_weekdays() * 1.0
         work_days -= self.public_holidays
-        work_days -= self.year.sick_leave_days / 12
-        work_days -= self.year.vacation_days / 12
+        if minus_sick_leave:
+            work_days -= self.year.sick_leave_days / 12
+        if minus_vacations:
+            work_days -= self.year.vacation_days / 12
         return work_days
+
+    def get_work_days_max(self):
+        """
+        Returns the maximum work days, if no one falls sick or takes vacations.
+
+        """
+        return self.get_work_days(
+            minus_sick_leave=False, minus_vacations=False)
 
     def get_workloads(self):
         """

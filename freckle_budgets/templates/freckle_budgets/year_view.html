@@ -30,10 +30,10 @@
                         <tr>
                             {% for day in week|slice:":5" %}
                                 {% is_available_workday day project_month.0 as is_available_workday_ %}
-                                <td class="{% if not is_available_workday_ %}freckle-budgets-date-unavailable{% endif %}">
+                                <td class="{% if day.month != project_month.0.month %}text-muted-lighter freckle-budgets-date-unavailable{% endif %} {% if not is_available_workday_ %}freckle-budgets-date-unavailable{% endif %}">
                                     <table class="freckle-budgets-table-cell">
                                         <tr>
-                                            <td class="freckle-budgets-date {% if day.month != project_month.0.month %}text-muted-lighter{% endif %}">{{ day|date:"j" }}</td>
+                                            <td class="freckle-budgets-date">{{ day|date:"j" }}</td>
                                             <td>
                                                 {% if day.month == project_month.0.month %}
                                                     {% for project in project_month.1 %}
@@ -75,8 +75,8 @@
             </table>
         </div>
         <div class="col-sm-3 freckle-budgets-month-info">
-            <p>Available ressources: {{ project_month.0.get_available_ressources|floatformat:2 }}</p>
-            <p>Work days: {{project_month.0.get_work_days|floatformat:2 }} </p>
+            <p>Max ressources: {{ project_month.0.get_available_ressources_max|floatformat:2 }} ({{ project_month.0.get_available_ressources_max_per_person}} / person)</p>
+            <p>Work days: {{project_month.0.get_work_days_max|floatformat:2 }} </p>
             <hr />
             {% for project in project_month.0.get_cashflow_projects %}
                 {% get_hours_left project entries_times as hours_left %}

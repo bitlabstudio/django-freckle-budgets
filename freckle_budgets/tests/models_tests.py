@@ -85,6 +85,22 @@ class MonthTestCase(TestCase):
             ' leave, 19 days remain. Multiplied with the daily hours (5) and'
             ' number of employees (2), the result should be 19 * 5 * 2 = 190'))
 
+    def test_get_available_ressources_max(self):
+        fixtures.create_month(self)
+        result = self.month.get_available_ressources_max()
+        self.assertEqual(result, 210, msg=(
+            'January has 22 work days. Minus holidays, 21 days remain.'
+            ' Multiplied with the daily hours (5) and number of employees (2),'
+            ' the result should be 21 * 5 * 2 = 210'))
+
+    def test_get_available_ressources_max_per_person(self):
+        fixtures.create_month(self)
+        result = self.month.get_available_ressources_max_per_person()
+        self.assertEqual(result, 105, msg=(
+            'January has 22 work days. Minus holidays, 21 days remain.'
+            ' Multiplied with the daily hours (5) the result should be'
+            ' 21 * 5 = 105'))
+
     def test_get_average_rate(self):
         fixtures.create_project_months(self)
         result = self.month.get_average_rate()
@@ -177,6 +193,24 @@ class MonthTestCase(TestCase):
             'January has 22 work days. Minus one public holiday. Minus 1'
             ' vacation day (12 / 12). Minus one sick leave day (12 / 12).'
             ' Therefore, the result should be 22 - 1 - 1 -1 = 19'))
+
+        result = self.month.get_work_days(minus_sick_leave=False)
+        self.assertEqual(result, 20, msg=(
+            'Like above, but this time we do not substract the sick-leave'
+            ' days'))
+
+        result = self.month.get_work_days(
+            minus_sick_leave=False, minus_vacations=False)
+        self.assertEqual(result, 21, msg=(
+            'Like above, but this time we do not substract the sick-leave'
+            ' and vacation days'))
+
+    def test_get_work_days_max(self):
+        fixtures.create_month(self)
+        result = self.month.get_work_days_max()
+        self.assertEqual(result, 21, msg=(
+            'January has 22 work days. Minus public holidays, the result'
+            ' should be 21'))
 
     def test_get_workload(self):
         fixtures.create_employee_project_months(self)

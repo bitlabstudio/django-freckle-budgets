@@ -51,15 +51,16 @@ def is_available_workday(day, month):
     """
     ``True`` if the given day is available as a workday in the given month.
 
-    Example: January has 22 workdays. If you deduct vacation-days and
-    sick-leave-days and public holidays, you might end up with 18 available
-    work days.
+    Example: January has 22 workdays. If you deduct public holidays, you end up
+    with 21 available work days.
 
-    We want to render the last 4 days of the month differently to show that
-    these days are work days but they might not be actually available.
+    We want to render the last X days of the month differently to show that
+    these days are not really available because the staff was absent due to the
+    holidays.
 
     """
-    work_days = month.get_work_days()
+    work_days = month.get_work_days(
+        minus_sick_leave=False, minus_vacations=False)
     workday = utils.get_workday_number(day)
     return workday <= work_days
 
