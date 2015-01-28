@@ -26,7 +26,8 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 class ProjectMonthAdmin(admin.ModelAdmin):
-    list_display = ['month', 'project', 'budget', 'rate']
+    list_display = [
+        'month', 'project', 'budget', 'overhead_previous_month', 'rate']
     list_filter = ['project', ]
     inlines = [EmployeeProjectMonthInline, ]
 

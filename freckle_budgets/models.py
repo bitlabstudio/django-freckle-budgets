@@ -291,11 +291,27 @@ class ProjectMonthManager(models.Manager):
 
 @python_2_unicode_compatible
 class ProjectMonth(models.Model):
+    """
+    Contains the budget for a certain project in a certain month.
+
+    :project: A ``Project`` instance.
+    :month: A ``Month`` instance.
+    :budget: The budget for this porject in this month.
+    :rate: The rate that can be billed for this project in this month. Budget
+      divided by rate equals ``budget_hours``.
+    :overhead_previous_month: Sometimes you have already worked hours on this
+      project in the previous month. Enter the amount of dollars that can be
+      deducted from this month's budget so that the hours achieved looks more
+      realistic.
+
+    """
     project = models.ForeignKey(
         Project, verbose_name=('Project'), related_name='project_months')
     month = models.ForeignKey(Month, verbose_name=('Month'))
     budget = models.FloatField(verbose_name=_('Budget'))
     rate = models.FloatField(verbose_name=_('Rate'))
+    overhead_previous_month = models.FloatField(
+        verbose_name=_('Overhead previous month'), blank=True, null=True)
 
     objects = ProjectMonthManager()
 
@@ -307,7 +323,10 @@ class ProjectMonth(models.Model):
 
     def get_budget_hours(self):
         """Returns the budget hours based on the budget and the rate."""
-        return self.budget / self.rate
+        overhead = self.overhead_previous_month
+        if overhead is None:
+            overhead = 0
+        return (self.budget - overhead) / self.rate
 
     def get_daily_hours(self):
         """Returns the daily hours needed in order to use up the budget."""

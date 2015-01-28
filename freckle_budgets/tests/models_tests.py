@@ -292,11 +292,22 @@ class ProjectMonthTestCase(TestCase):
 
     def test_get_budget_hours(self):
         fixtures.create_project_months(self)
+
         result = self.project_month1_1.get_budget_hours()
         expected = self.project_month1_1.budget / self.project_month1_1.rate
         self.assertEqual(result, expected, msg=(
             'Should return the hours that can be worked on this project given'
             ' the budget and hourly rate'))
+
+        self.project_month1_1.overhead_previous_month = \
+            self.project_month1_1.budget / 2
+        self.project_month1_1.save()
+        expected = expected / 2
+        result = self.project_month1_1.get_budget_hours()
+        self.assertEqual(result, expected, msg=(
+            'Should return the hours that can be worked on this project given'
+            ' the budget and hourly rate, should deduct eventual overhead'
+            ' hours from the budget when calculating the result'))
 
     def test_get_daily_hours(self):
         fixtures.create_project_months(self)
