@@ -19,6 +19,25 @@ class EmployeeTestCase(TestCase):
         self.assertEqual(obj.__str__(), str(obj.name), msg=(
             '__str__ should return correct string'))
 
+    def test_get_employee_project_months(self):
+        fixtures.create_employee_project_months(self)
+        result = self.employee1.get_employee_project_months(self.month)
+        self.assertEqual(result.count(), 1, msg=(
+            'Should return the projects this employee is responsible for'
+            ' during this month'))
+
+
+class FreeTimeTestCase(TestCase):
+    """Tests for the ``FreeTime`` model."""
+    longMessage = True
+
+    def test_class(self):
+        obj = mixer.blend('freckle_budgets.FreeTime')
+        self.assertTrue(obj.pk, msg=('Object can be saved'))
+        expected = '{0} - {1}'.format(obj.employee, obj.day)
+        self.assertEqual(obj.__str__(), expected, msg=(
+            '__str__ should return correct string'))
+
 
 class YearTestCase(TestCase):
     """Tests for the ``Year`` model."""
@@ -121,6 +140,12 @@ class MonthTestCase(TestCase):
         expected = datetime.date(2015, 1, 1)
         self.assertEqual(result, expected, msg=(
             'Should return a date object for this month'))
+
+    def test_get_employees(self):
+        fixtures.create_employee_project_months(self)
+        result = self.month.get_employees()
+        self.assertEqual(result.count(), 2, msg=(
+            'Should return all employees that have projects in this month'))
 
     def test_get_investment_projects(self):
         fixtures.create_project_months(self)
@@ -330,3 +355,10 @@ class EmployeeProjectMonthTestCase(TestCase):
         expected = '{0} - {1}'.format(obj.project_month, obj.employee)
         self.assertEqual(obj.__str__(), expected, msg=(
             '__str__ should return correct string'))
+
+    def test_get_budget_hours(self):
+        fixtures.create_employee_project_months(self)
+        result = self.employee_project_month.get_budget_hours()
+        self.assertEqual(result, 10, msg=(
+            'Should return the hours this employee should be working on this'
+            ' project according to the project budget and his responsibility'))

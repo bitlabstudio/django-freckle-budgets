@@ -14,6 +14,21 @@ from .. import freckle_api
 from ..templatetags import freckle_budgets_tags as tags
 
 
+class GetEmployeeProjectMonths(TestCase):
+    """Tests for the ``get_employee_project_months`` templatetag."""
+    longMessage = True
+
+    def test_tag(self):
+        fixtures.create_employee_project_months(self)
+        result = list(
+            tags.get_employee_project_months(self.employee1, self.month))
+        expected = list(
+            self.employee1.get_employee_project_months(self.month))
+        self.assertEqual(result, expected, msg=(
+            'Should return the same result as if calling the method on the'
+            ' instance directly'))
+
+
 class GetHoursLeftTestCase(TestCase):
     """Tests for the ``get_hours_left`` templatetag."""
     longMessage = True
@@ -43,6 +58,68 @@ class GetHoursLeftTestCase(TestCase):
             self.assertEqual(round(result, 2), 10.00, msg=(
                 'Should not crash if for the given projects no freckle'
                 ' timings are present'))
+
+
+class GetHoursLeftForEmployeeTestCase(TestCase):
+    """Tests for the ``get_hours_left_for_employee`` templatetag."""
+    longMessage = True
+
+    def test_tag(self):
+        with patch('freckle_budgets.freckle_api.requests.request') as request_mock:  # NOQA
+            request_mock.return_value = MagicMock()
+            request_mock.return_value.status_code = 200
+            request_mock.return_value.json = MagicMock()
+            request_mock.return_value.json.return_value = \
+                fixtures.get_api_response(self)
+
+            projects = models.Project.objects.get_for_year(self.year.year)
+            client = freckle_api.FreckleClient('foobar', 'token')
+            entries = client.get_entries(projects, '2015-0101', '2015-12-31')
+            entries_times = freckle_api.get_project_times(projects, entries)
+
+            # this should be month2, proj2
+            result = tags.get_hours_left_for_employee(
+                self.employee1_proj1_month1, entries_times)
+            self.assertEqual(round(result, 2), 5.95, msg=(
+                'Should substract the tracked hours from the total budget'
+                ' hours for this employee'))
+
+            result = tags.get_hours_left_for_employee(
+                self.employee1_proj3_month1, entries_times)
+            self.assertEqual(round(result, 2), 6.00, msg=(
+                'Should not crash if for the given projects no freckle'
+                ' timings are present'))
+
+
+class GetHoursPerDayTestCase(TestCase):
+    """Tests for the ``get_hours_per_day`` templatetag."""
+    longMessage = True
+
+    def test_tag(self):
+        fixtures.create_employee_project_months(self)
+
+        with patch('freckle_budgets.templatetags.freckle_budgets_tags.now') as now_mock:  # NOQA
+            now_mock.return_value = datetime.date(1900, 1, 1)
+
+            result = tags.get_hours_per_day(self.employee_project_month, 10)
+            self.assertEqual(result, 0, msg=(
+                'Should return 0 if today is a different year than the'
+                ' given project month'))
+
+        with patch('freckle_budgets.templatetags.freckle_budgets_tags.now') as now_mock:  # NOQA
+            now_mock.return_value = datetime.date(2015, 2, 1)
+
+            result = tags.get_hours_per_day(self.employee_project_month, 10)
+            self.assertEqual(result, 0, msg=(
+                'Should return 0 if today is a different month than the'
+                ' given project month'))
+
+        with patch('freckle_budgets.templatetags.freckle_budgets_tags.now') as now_mock:  # NOQA
+            now_mock.return_value = datetime.date(2015, 1, 15)
+            result = tags.get_hours_per_day(self.employee_project_month, 1)
+            self.assertEqual(round(result, 2), 0.08, msg=(
+                'Should return the hours needed to fulfill the budget by the'
+                ' end the month.'))
 
 
 class GetWeeksTestCase(TestCase):
@@ -118,8 +195,22 @@ class IsBudgetFulfilledTestCase(TestCase):
         project_month = mixer.blend(
             'freckle_budgets.ProjectMonth', budget=1000, rate=100)
         entries_times = {
-            1: {101: 5, 102: 8, },
-            2: {102: 16}
+            1: {
+                101: {
+                    1111: 5,
+                    'total': 5,
+                },
+                102: {
+                    1111: 8,
+                    'total': 8,
+                },
+            },
+            2: {
+                102: {
+                    1111: 16,
+                    'total': 16,
+                },
+            },
         }
         day = datetime.date(2015, 01, 01)
 
@@ -141,7 +232,7 @@ class IsBudgetFulfilledTestCase(TestCase):
             ' 5 minutes so far, so no day has been fulfilled, yet'))
 
         day = datetime.date(2015, 1, 5)
-        entries_times[1][101] = 82
+        entries_times[1][101]['total'] = 82
         result = tags.is_budget_fulfilled(entries_times, project_month, day)
         self.assertTrue(result, msg=(
             'This project needs 0.45hrs per day (27.27 minutes) and we have'

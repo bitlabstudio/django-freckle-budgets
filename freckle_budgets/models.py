@@ -19,6 +19,31 @@ class Employee(models.Model):
     def __str__(self):
         return str(self.name)
 
+    def get_employee_project_months(self, month):
+        """
+        Returns the projects this employee is responsible for in this month.
+
+        """
+        return EmployeeProjectMonth.objects.filter(
+            employee=self, project_month__month=month)
+
+
+@python_2_unicode_compatible
+class FreeTime(models.Model):
+    employee = models.ForeignKey(Employee, verbose_name=_('Employee'))
+    day = models.DateField(
+        verbose_name=_('Day'))
+    is_public_holiday = models.BooleanField(
+        verbose_name=_('Is public holiday'), default=False)
+    is_sick_leave = models.BooleanField(
+        verbose_name=_('Is sick leave'), default=False)
+
+    class Meta:
+        ordering = ['employee', '-day']
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.employee, self.day)
+
 
 @python_2_unicode_compatible
 class Year(models.Model):
@@ -105,6 +130,16 @@ class Month(models.Model):
 
     def get_date(self):
         return datetime.date(self.year.year, self.month, 1)
+
+    def get_employees(self):
+        """
+        Returns all employees that have projects scheduled for this month.
+
+        """
+        employee_pks = EmployeeProjectMonth.objects.filter(
+            project_month__month=self).values_list(
+                'employee__pk', flat=True).distinct()
+        return Employee.objects.filter(pk__in=employee_pks)
 
     def get_investment_projects(self):
         return ProjectMonth.objects.filter(
@@ -351,3 +386,13 @@ class EmployeeProjectMonth(models.Model):
 
     def __str__(self):
         return '{0} - {1}'.format(self.project_month, self.employee)
+
+    def get_budget_hours(self):
+        """
+        Returns the total hours the employee should be working on this project.
+
+        Based on the project's budget and the responsibility of this employee.
+
+        """
+        budget_hours = self.project_month.get_budget_hours()
+        return budget_hours * (self.responsibility / 100.0)

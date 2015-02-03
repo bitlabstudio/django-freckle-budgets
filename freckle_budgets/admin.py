@@ -17,6 +17,11 @@ class EmployeeProjectMonthInline(admin.TabularInline):
     model = models.EmployeeProjectMonth
 
 
+class FreeTimeAdmin(admin.ModelAdmin):
+    list_display = ['employee', 'day']
+    list_filter = ['employee', ]
+
+
 class MonthAdmin(admin.ModelAdmin):
     list_display = ['year', 'month', 'employees', 'public_holidays']
 
@@ -38,6 +43,7 @@ class YearAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Employee, EmployeeAdmin)
 admin.site.register(models.EmployeeProjectMonth, EmployeeProjectMonthAdmin)
+admin.site.register(models.FreeTime, FreeTimeAdmin)
 admin.site.register(models.Month, MonthAdmin)
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.ProjectMonth, ProjectMonthAdmin)

@@ -68,15 +68,37 @@ class FreckleClient(object):
 
 
 def get_project_times(projects, entries):
+    """
+    Returns a dict with total time tracked per project / employee.
+
+    The dict should look like this:
+
+        {
+            month: {
+                project_id: {
+                    user_id-1: XX,
+                    user_id-2: YY,
+                    total: XX + YY,
+                },
+            },
+        }
+
+    """
     result = {}
     for entry in entries:
-        entry_date = datetime.datetime.strptime(entry['entry']['date'], '%Y-%m-%d')
+        entry_date = datetime.datetime.strptime(
+            entry['entry']['date'], '%Y-%m-%d')
         if entry_date.month not in result:
             result[entry_date.month] = {}
         project_id = entry['entry']['project_id']
+        user_id = entry['entry']['user_id']
         project = projects.get(freckle_project_id=project_id)
         if project_id not in result[entry_date.month]:
-            result[entry_date.month][project_id] = 0
+            result[entry_date.month][project_id] = {'total': 0, }
+        if user_id not in result[entry_date.month][project_id]:
+            result[entry_date.month][project_id][user_id] = 0
         if project.is_investment or entry['entry']['billable']:
-            result[entry_date.month][project_id] += entry['entry']['minutes']
+            minutes = entry['entry']['minutes']
+            result[entry_date.month][project_id][user_id] += minutes
+            result[entry_date.month][project_id]['total'] += minutes
     return result

@@ -47,8 +47,26 @@ class GetProjectTimesTestCase(TestCase):
         projects = models.Project.objects.get_for_year(self.year.year)
 
         expected = {
-            1: {111: 5, 222: 8, },
-            2: {222: 16, 333: 32, },
+            1: {
+                111: {
+                    1111: 5,
+                    'total': 5,
+                },
+                222: {
+                    2222: 8,
+                    'total': 8,
+                },
+            },
+            2: {
+                222: {
+                    2222: 16,
+                    'total': 16,
+                },
+                333: {
+                    1111: 32,
+                    'total': 32,
+                },
+            },
         }
 
         result = freckle_api.get_project_times(projects, entries)

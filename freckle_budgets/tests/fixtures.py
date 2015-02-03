@@ -66,10 +66,22 @@ def get_api_response(cls):
     cls.proj3 = mixer.blend(
         'freckle_budgets.Project', freckle_project_id='333',
         is_investment=True)
+    cls.employee1 = mixer.blend(
+        'freckle_budgets.Employee', freckle_id='1111')
+    cls.employee2 = mixer.blend(
+        'freckle_budgets.Employee', freckle_id='2222')
 
     cls.proj1_month1 = mixer.blend(
         'freckle_budgets.ProjectMonth', project=cls.proj1, month=cls.month1,
         budget=1000, rate=100)
+    cls.employee1_proj1_month1 = mixer.blend(
+        'freckle_budgets.EmployeeProjectMonth',
+        project_month=cls.proj1_month1, employee=cls.employee1,
+        responsibility=60)
+    cls.employee2_proj1_month1 = mixer.blend(
+        'freckle_budgets.EmployeeProjectMonth',
+        project_month=cls.proj1_month1, employee=cls.employee2,
+        responsibility=40)
     cls.proj1_month2 = mixer.blend(
         'freckle_budgets.ProjectMonth', project=cls.proj1, month=cls.month2,
         budget=1000, rate=100)
@@ -82,6 +94,11 @@ def get_api_response(cls):
     cls.proj3_month1 = mixer.blend(
         'freckle_budgets.ProjectMonth', project=cls.proj3, month=cls.month1,
         budget=4000, rate=400)
+    cls.employee1_proj3_month1 = mixer.blend(
+        'freckle_budgets.EmployeeProjectMonth',
+        project_month=cls.proj3_month1, employee=cls.employee1,
+        responsibility=60)
+
     cls.proj3_month2 = mixer.blend(
         'freckle_budgets.ProjectMonth', project=cls.proj3, month=cls.month2,
         budget=4000, rate=400)
@@ -92,6 +109,7 @@ def get_api_response(cls):
             'entry': {
                 'date': '2015-01-01',
                 'project_id': 111,
+                'user_id': 1111,
                 'billable': True,
                 'minutes': 1,
             }
@@ -101,6 +119,7 @@ def get_api_response(cls):
             'entry': {
                 'date': '2015-01-01',
                 'project_id': 111,
+                'user_id': 1111,
                 'billable': False,
                 'minutes': 2,
             }
@@ -110,6 +129,7 @@ def get_api_response(cls):
             'entry': {
                 'date': '2015-01-01',
                 'project_id': 111,
+                'user_id': 1111,
                 'billable': True,
                 'minutes': 4,
             }
@@ -119,6 +139,7 @@ def get_api_response(cls):
             'entry': {
                 'date': '2015-01-01',
                 'project_id': 222,
+                'user_id': 2222,
                 'billable': True,
                 'minutes': 8,
             }
@@ -128,6 +149,7 @@ def get_api_response(cls):
             'entry': {
                 'date': '2015-02-01',
                 'project_id': 222,
+                'user_id': 2222,
                 'billable': True,
                 'minutes': 16,
             }
@@ -137,6 +159,7 @@ def get_api_response(cls):
             'entry': {
                 'date': '2015-02-01',
                 'project_id': 333,
+                'user_id': 1111,
                 'billable': False,
                 'minutes': 32,
             }
