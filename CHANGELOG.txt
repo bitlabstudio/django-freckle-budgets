@@ -1,7 +1,10 @@
-=== 0.0.X (onggoing, to be released as 0.2) ===
+=== 0.2.X (onggoing, to be released as 0.3) ===
+
+=== 0.2 ===
 
 - Updated admins
 - Properly counting times for investment projects
+- Added per-employee-workload feature
 
 === 0.0.X (onggoing, to be released as 0.1) ===
 - Initial commit

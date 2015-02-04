@@ -116,6 +116,43 @@ year, you would have to add twelve objects:
 * **Budget**: The budget that you can burn on this project during this month.
 * **Rate**: The hourly rate that you can bill for this project.
 
+Add employees
++++++++++++++
+
+By now, your budget planning should look pretty good. It is time to add some
+employees. You can do that via the Django admin:
+
+* **Name**: The name of your employee
+* **Freckle ID**: The user id of that employee in Letsfreckle.
+
+Add employee project months
++++++++++++++++++++++++++++
+
+For each ``ProjectMonth`` you can define responsibilities for your employees:
+
+* **ProjectMonth**: Foreign key to the ``ProjectMonth`` you are referring to.
+* **Employee**: Foreign key to the ``Employee`` you are referring to.
+* **Responsibility**: Amount in percent (1-100). For example, 50 would mean
+  that this employee is responsible of working off 50% of the total budget
+  for this project in this month.
+
+Add free time
++++++++++++++
+
+If your employees know that they will have vacation days, or there are public
+holidays, you can track those as well. This will raise the hours per day, since
+the same amount of hours will have to be spread over lesser days available in
+the month:
+
+* **Employee**: Foreign key to the ``Employee`` who will be absent.
+* **Day**: The day when the employee will be absent.
+* **Is public holiday**: If ``True``, we will assume that this is a public
+  holiday. This could be interesting in the future to track, public holidays,
+  sick-leave and vacation days.
+* **Is sick leave**: If ``True``, we will assume that this is a sick-leave day.
+  This could be interesting in the future to track, public holidays, sick-leave
+  and vacation days.
+
 Contribute
 ----------
 
