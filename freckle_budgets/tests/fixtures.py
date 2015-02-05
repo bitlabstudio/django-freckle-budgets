@@ -106,63 +106,51 @@ def get_api_response(cls):
     entries = [
         {
             # First project, first month, billable hours
-            'entry': {
-                'date': '2015-01-01',
-                'project_id': 111,
-                'user_id': 1111,
-                'billable': True,
-                'minutes': 1,
-            }
+            'date': '2015-01-01',
+            'project': {'id': 111, 'name': 'Project 111'},
+            'user': {'id': 1111, },
+            'billable': True,
+            'minutes': 1,
         },
         {
             # Unbillable hours should not be added up
-            'entry': {
-                'date': '2015-01-01',
-                'project_id': 111,
-                'user_id': 1111,
-                'billable': False,
-                'minutes': 2,
-            }
+            'date': '2015-01-01',
+            'project': {'id': 111, 'name': 'Project 111'},
+            'user': {'id': 1111, },
+            'billable': False,
+            'minutes': 2,
         },
         {
             # Billable hours should be added up
-            'entry': {
-                'date': '2015-01-01',
-                'project_id': 111,
-                'user_id': 1111,
-                'billable': True,
-                'minutes': 4,
-            }
+            'date': '2015-01-01',
+            'project': {'id': 111, 'name': 'Project 111'},
+            'user': {'id': 1111, },
+            'billable': True,
+            'minutes': 4,
         },
         {
             # Another project in the same month
-            'entry': {
-                'date': '2015-01-01',
-                'project_id': 222,
-                'user_id': 2222,
-                'billable': True,
-                'minutes': 8,
-            }
+            'date': '2015-01-01',
+            'project': {'id': 222, 'name': 'Project 222'},
+            'user': {'id': 2222, },
+            'billable': True,
+            'minutes': 8,
         },
         {
             # Another month
-            'entry': {
-                'date': '2015-02-01',
-                'project_id': 222,
-                'user_id': 2222,
-                'billable': True,
-                'minutes': 16,
-            }
+            'date': '2015-02-01',
+            'project': {'id': 222, 'name': 'Project 222'},
+            'user': {'id': 2222, },
+            'billable': True,
+            'minutes': 16,
         },
         {
             # Unbillable hours for investment projects should be added up
-            'entry': {
-                'date': '2015-02-01',
-                'project_id': 333,
-                'user_id': 1111,
-                'billable': False,
-                'minutes': 32,
-            }
+            'date': '2015-02-01',
+            'project': {'id': 333, 'name': 'Project 333'},
+            'user': {'id': 1111, },
+            'billable': False,
+            'minutes': 32,
         },
     ]
     return entries

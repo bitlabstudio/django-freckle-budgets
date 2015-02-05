@@ -39,7 +39,7 @@ dev_requires = [
 install_requires = [
     'django',
     'django-libs',
-    'requests',
+    'python-freckle-client',
 ]
 
 

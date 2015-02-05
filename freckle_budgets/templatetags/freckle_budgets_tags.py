@@ -82,6 +82,23 @@ def get_hours_per_day(employee_project_month, hours_left):
 
 
 @register.assignment_tag
+def get_unplanned_projects(project_month, employee, entry_times):
+    result = []
+    try:
+        for entry in entry_times[project_month[0].month].items():
+            if not entry[1]['is_planned']:
+                try:
+                    result.append('{0} ({1})'.format(
+                        entry[1]['project_name'],
+                        entry[1][int(employee.freckle_id)]))
+                except KeyError:
+                    continue
+    except KeyError:
+        return None
+    return result
+
+
+@register.assignment_tag
 def get_weeks(month):
     """Returns the days for a month as a list of weeks."""
     return calendar.Calendar(0).monthdatescalendar(

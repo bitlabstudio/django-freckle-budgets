@@ -4,7 +4,7 @@ import datetime
 
 from django.test import TestCase
 
-from mock import MagicMock, patch
+from mock import patch
 
 from mixer.backend.django import mixer
 
@@ -34,16 +34,12 @@ class GetHoursLeftTestCase(TestCase):
     longMessage = True
 
     def test_tag(self):
-        with patch('freckle_budgets.freckle_api.requests.request') as request_mock:  # NOQA
-            request_mock.return_value = MagicMock()
-            request_mock.return_value.status_code = 200
-            request_mock.return_value.json = MagicMock()
-            request_mock.return_value.json.return_value = \
-                fixtures.get_api_response(self)
+        with patch('freckle_budgets.freckle_api.get_entries') as entries_mock:  # NOQA
+            entries_mock.return_value = fixtures.get_api_response(self)
 
             projects = models.Project.objects.get_for_year(self.year.year)
-            client = freckle_api.FreckleClient('foobar', 'token')
-            entries = client.get_entries(projects, '2015-0101', '2015-12-31')
+            entries = freckle_api.get_entries(
+                projects, '2015-0101', '2015-12-31')
             entries_times = freckle_api.get_project_times(projects, entries)
 
             # this should be month2, proj2
@@ -65,16 +61,12 @@ class GetHoursLeftForEmployeeTestCase(TestCase):
     longMessage = True
 
     def test_tag(self):
-        with patch('freckle_budgets.freckle_api.requests.request') as request_mock:  # NOQA
-            request_mock.return_value = MagicMock()
-            request_mock.return_value.status_code = 200
-            request_mock.return_value.json = MagicMock()
-            request_mock.return_value.json.return_value = \
-                fixtures.get_api_response(self)
+        with patch('freckle_budgets.freckle_api.get_entries') as entries_mock:  # NOQA
+            entries_mock.return_value = fixtures.get_api_response(self)
 
             projects = models.Project.objects.get_for_year(self.year.year)
-            client = freckle_api.FreckleClient('foobar', 'token')
-            entries = client.get_entries(projects, '2015-0101', '2015-12-31')
+            entries = freckle_api.get_entries(
+                projects, '2015-0101', '2015-12-31')
             entries_times = freckle_api.get_project_times(projects, entries)
 
             # this should be month2, proj2

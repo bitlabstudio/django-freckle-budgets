@@ -5,66 +5,35 @@ See http://developer.letsfreckle.com
 
 """
 import datetime
-import json
 
-import requests
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+
+from freckle_client.client import FreckleClientV2
 
 
-class FreckleClient(object):
-    """Base class for Freckle API access."""
-    def __init__(self, account_name, api_token):
-        self.account_name = account_name
-        self.api_token = api_token
+client = FreckleClientV2(access_token=settings.FRECKLE_BUDGETS_ACCESS_TOKEN)
 
-    def fetch_json(self, uri_path, http_method='GET', headers=None,
-                   query_params=None, post_args=None):
-        """Fetch some JSON from Trello."""
-        # explicit values here to avoid mutable default values
-        if headers is None:
-            headers = {}
-        if query_params is None:
-            query_params = {}
-        if post_args is None:
-            post_args = {}
 
-        # set content type and accept headers to handle JSON
-        headers['Accept'] = 'application/json'
-        query_params['token'] = self.api_token
+def get_entries(projects, start_date, end_date):
+    """
+    Returns the entries for the given project and time frame.
 
-        # construct the full URL without query parameters
-        url = 'https://{0}.letsfreckle.com/api/{1}.json'.format(
-            self.account_name, uri_path)
+    :param start_date: String representing the start date (YYYY-MM-DD).
+    :param end_date: String representing the end date (YYYY-MM-DD).
 
-        # perform the HTTP requests, if possible uses OAuth authentication
-        response = requests.request(
-            http_method, url, params=query_params, headers=headers,
-            data=json.dumps(post_args))
-
-        if response.status_code != 200:
-            raise Exception(
-                "Freckle API Response is not 200: %s" % (response.text))
-
-        return response.json()
-
-    def get_entries(self, projects, start_date, end_date):
-        """
-        Returns the entries for the given project and time frame.
-
-        :param start_date: String representing the start date (YYYY-MM-DD).
-        :param end_date: String representing the end date (YYYY-MM-DD).
-
-        """
-        entries = self.fetch_json(
-            'entries',
-            query_params={
-                'per_page': 1000,
-                'search[from]': start_date,
-                'search[to]': end_date,
-                'search[projects]': ','.join(
-                    [project.freckle_project_id for project in projects]),
-            }
-        )
-        return entries
+    """
+    entries = client.fetch_json(
+        'entries',
+        query_params={
+            'per_page': 1000,
+            'search[from]': start_date,
+            'search[to]': end_date,
+            'search[projects]': ','.join(
+                [project.freckle_project_id for project in projects]),
+        }
+    )
+    return entries
 
 
 def get_project_times(projects, entries):
@@ -87,18 +56,27 @@ def get_project_times(projects, entries):
     result = {}
     for entry in entries:
         entry_date = datetime.datetime.strptime(
-            entry['entry']['date'], '%Y-%m-%d')
+            entry['date'], '%Y-%m-%d')
         if entry_date.month not in result:
             result[entry_date.month] = {}
-        project_id = entry['entry']['project_id']
-        user_id = entry['entry']['user_id']
-        project = projects.get(freckle_project_id=project_id)
+        project_id = entry['project']['id']
+        project_name = entry['project']['name']
+        user_id = entry['user']['id']
+        try:
+            project = projects.get(freckle_project_id=project_id)
+        except ObjectDoesNotExist:
+            project = None
         if project_id not in result[entry_date.month]:
-            result[entry_date.month][project_id] = {'total': 0, }
+            result[entry_date.month][project_id] = {
+                'total': 0, 'project_name': project_name, }
+            if project is None:
+                result[entry_date.month][project_id]['is_planned'] = False
+            else:
+                result[entry_date.month][project_id]['is_planned'] = True
         if user_id not in result[entry_date.month][project_id]:
             result[entry_date.month][project_id][user_id] = 0
-        if project.is_investment or entry['entry']['billable']:
-            minutes = entry['entry']['minutes']
+        if (project and project.is_investment) or entry['billable']:
+            minutes = entry['minutes']
             result[entry_date.month][project_id][user_id] += minutes
             result[entry_date.month][project_id]['total'] += minutes
     return result

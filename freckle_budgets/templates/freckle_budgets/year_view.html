@@ -106,6 +106,8 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            {% get_unplanned_projects project_month employee entries_times as unplanned_projects %}
+                            <p>Unplanned: {{ unplanned_projects }}</p>
                         {% endfor %}
                     </div>
                     <div class="col-sm-3 freckle-budgets-month-info">
