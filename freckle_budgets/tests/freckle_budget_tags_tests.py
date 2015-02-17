@@ -115,6 +115,22 @@ class GetHoursPerDayTestCase(TestCase):
                 ' end the month.'))
 
 
+class GetUnplannedProjectsTestCase(TestCase):
+    """Tests for the ``GetUnplannedProjects`` templatetag."""
+    longMessage = True
+
+    def test_tag(self):
+        entries = fixtures.get_api_response(self)
+        projects = models.Project.objects.get_for_year(self.year.year)
+        entry_times = freckle_api.get_project_times(projects, entries)
+
+        result = tags.get_unplanned_projects(
+            (self.proj1_month1.month, None), self.employee1, entry_times)
+        self.assertEqual(result, ['Project 999 (99)'], msg=(
+            'Should return projects that have time trackings in Freckle'
+            ' but are not planned and budgeted in Django'))
+
+
 class GetWeeksTestCase(TestCase):
     """Tests for the ``get_weeks`` assignment tag."""
     longMessage = True

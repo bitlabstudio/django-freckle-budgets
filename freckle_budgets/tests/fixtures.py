@@ -152,5 +152,13 @@ def get_api_response(cls):
             'billable': False,
             'minutes': 32,
         },
+        {
+            # A project that has been tracked in Freckle but is not in Django
+            'date': '2015-01-01',
+            'project': {'id': 999, 'name': 'Project 999'},
+            'user': {'id': 1111, },
+            'billable': True,
+            'minutes': 99,
+        },
     ]
     return entries

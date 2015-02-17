@@ -36,10 +36,6 @@ def get_hours_left_for_employee(employee_project_month, entries_times):
     Returns the hours left for the employee in order to fulfill the budget.
 
     """
-    if employee_project_month.employee.name == 'Martin':
-        if employee_project_month.project_month.month.month == 2:
-            pass
-
     project_month = employee_project_month.project_month
     employee = int(employee_project_month.employee.freckle_id)
     project_id = int(project_month.project.freckle_project_id)
@@ -95,9 +91,9 @@ def get_unplanned_projects(project_month, employee, entry_times):
                     result.append('{0} ({1})'.format(
                         entry[1]['project_name'],
                         entry[1][int(employee.freckle_id)]))
-                except KeyError:
+                except KeyError:  # pragma: no cover
                     continue
-    except KeyError:
+    except KeyError:  # pragma: no cover
         return None
     return result
 

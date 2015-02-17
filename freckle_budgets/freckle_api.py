@@ -15,7 +15,7 @@ from freckle_client.client import FreckleClientV2
 client = FreckleClientV2(access_token=settings.FRECKLE_BUDGETS_ACCESS_TOKEN)
 
 
-def get_entries(projects, start_date, end_date):
+def get_entries(projects, start_date, end_date):  # pragma: no cover
     """
     Returns the entries for the given project and time frame.
 
