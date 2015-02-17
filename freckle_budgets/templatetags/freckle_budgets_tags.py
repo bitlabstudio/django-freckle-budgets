@@ -155,3 +155,10 @@ def is_budget_fulfilled(entries_times, project, day):
     if workday <= days_fulfilled:
         return True
     return False
+
+
+@register.filter
+def number_or_zero(number):
+    if number < 0:
+        return 0
+    return number

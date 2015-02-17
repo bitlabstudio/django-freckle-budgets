@@ -253,3 +253,16 @@ class IsBudgetFulfilledTestCase(TestCase):
         self.assertFalse(result, msg=(
             'Sanity check for the test above. If three days are fulfilled,'
             ' the fourth workday should not be fulfilled'))
+
+
+class NumberOrZeroTestCase(TestCase):
+    """Tests for the ``number_or_zero`` filter."""
+    longMessage = True
+
+    def test_filter(self):
+        self.assertEqual(tags.number_or_zero(0), 0, msg=(
+            'Should return 0 if the number is zero'))
+        self.assertEqual(tags.number_or_zero(1), 1, msg=(
+            'Should return the number if the number is greater than zero'))
+        self.assertEqual(tags.number_or_zero(-1), 0, msg=(
+            'Should return 0 if the number is less than zero'))
