@@ -93,7 +93,7 @@
                                             <td>
                                                 {% get_hours_per_day employee_project_month hours_left as hours_per_day %}
                                                 {{ hours_per_day|floatformat:2 }}
-                                                {% sum "HOURS_PER_DAY_TOTAL" hours_per_day %}
+                                                {% sum "HOURS_PER_DAY_TOTAL" hours_per_day|number_or_zero %}
                                             </td>
                                         </tr>
                                     {% endfor %}
