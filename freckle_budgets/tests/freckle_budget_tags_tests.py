@@ -69,10 +69,11 @@ class GetHoursLeftForEmployeeTestCase(TestCase):
                 projects, '2015-0101', '2015-12-31')
             entries_times = freckle_api.get_project_times(projects, entries)
 
-            # this should be month2, proj2
+            # Project has 6hr budget, user has tracked 5 minutes and has 60%
+            # responsibility
             result = tags.get_hours_left_for_employee(
                 self.employee1_proj1_month1, entries_times)
-            self.assertEqual(round(result, 2), 5.95, msg=(
+            self.assertEqual(round(result, 2), 3.52, msg=(
                 'Should substract the tracked hours from the total budget'
                 ' hours for this employee'))
 

@@ -36,6 +36,10 @@ def get_hours_left_for_employee(employee_project_month, entries_times):
     Returns the hours left for the employee in order to fulfill the budget.
 
     """
+    if employee_project_month.employee.name == 'Martin':
+        if employee_project_month.project_month.month.month == 2:
+            pass
+
     project_month = employee_project_month.project_month
     employee = int(employee_project_month.employee.freckle_id)
     project_id = int(project_month.project.freckle_project_id)
@@ -45,9 +49,9 @@ def get_hours_left_for_employee(employee_project_month, entries_times):
             project_month.month.month][project_id][employee]
     except KeyError:
         return budget_hours
-    time_tracked_portion = \
-        time_tracked * (employee_project_month.responsibility / 100.0)
-    return (budget_hours * 60.0 - time_tracked_portion) / 60.0
+    responsibility = employee_project_month.responsibility / 100.0
+    responsible_budget = (budget_hours * 60.0) * responsibility
+    return (responsible_budget - time_tracked) / 60.0
 
 
 @register.assignment_tag
