@@ -29,6 +29,28 @@ class GetEmployeeProjectMonths(TestCase):
             ' instance directly'))
 
 
+class GetEmployeeSickLeaveDaysTestCase(TestCase):
+    """Tests for the ``GetEmployeeSickLeaveDays`` templatetag."""
+    longMessage = True
+
+    def test_tag(self):
+        fixtures.create_employee_project_months(self)
+        result = tags.get_employee_sick_leave_days(self.employee1, self.month)
+        self.assertEqual(result.count(), 1, msg=(
+            'Should return sick leave days for given employee and month'))
+
+
+class GetEmployeeVacationDaysTestCase(TestCase):
+    """Tests for the ``GetEmployeeVacationDays`` templatetag."""
+    longMessage = True
+
+    def test_tag(self):
+        fixtures.create_employee_project_months(self)
+        result = tags.get_employee_vacation_days(self.employee1, self.month)
+        self.assertEqual(result.count(), 1, msg=(
+            'Should return vacation days for given employee and month'))
+
+
 class GetHoursLeftTestCase(TestCase):
     """Tests for the ``get_hours_left`` templatetag."""
     longMessage = True
@@ -110,7 +132,14 @@ class GetHoursPerDayTestCase(TestCase):
         with patch('freckle_budgets.templatetags.freckle_budgets_tags.now') as now_mock:  # NOQA
             now_mock.return_value = datetime.date(2015, 1, 15)
             result = tags.get_hours_per_day(self.employee_project_month, 1)
-            self.assertEqual(round(result, 2), 0.08, msg=(
+            self.assertEqual(round(result, 2), 0.11, msg=(
+                'Should return the hours needed to fulfill the budget by the'
+                ' end the month.'))
+
+        with patch('freckle_budgets.templatetags.freckle_budgets_tags.now') as now_mock:  # NOQA
+            now_mock.return_value = datetime.date(2015, 1, 31)
+            result = tags.get_hours_per_day(self.employee_project_month, 1)
+            self.assertEqual(round(result, 2), 1.00, msg=(
                 'Should return the hours needed to fulfill the budget by the'
                 ' end the month.'))
 

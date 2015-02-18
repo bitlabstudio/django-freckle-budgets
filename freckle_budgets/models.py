@@ -4,8 +4,8 @@ import datetime
 
 from django.db import models
 from django.db.models import Sum
-from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.translation import ugettext_lazy as _
 
 
 @python_2_unicode_compatible
@@ -141,9 +141,29 @@ class Month(models.Model):
                 'employee__pk', flat=True).distinct()
         return Employee.objects.filter(pk__in=employee_pks)
 
+    def get_free_time_for_employee(self, employee):
+        """Returns the free times for this month and the given employee."""
+        month_start = datetime.date(self.year.year, self.month, 1)
+        month_end = datetime.date(
+            self.year.year, self.month,
+            calendar.monthrange(self.year.year, self.month)[1])
+        free_time = FreeTime.objects.filter(
+            employee=employee, day__gte=month_start, day__lte=month_end)
+        return free_time
+
     def get_investment_projects(self):
         return ProjectMonth.objects.filter(
             month=self, project__is_investment=True).order_by('-budget', )
+
+    def get_public_holidays_for_employee(self, employee):
+        """Returns public holidays for given employee and this month."""
+        return self.get_free_time_for_employee(employee).filter(
+            is_public_holiday=True)
+
+    def get_sick_leave_days_for_employee(self, employee):
+        """Returns sick leave days for the given employee and this month."""
+        return self.get_free_time_for_employee(employee).filter(
+            is_sick_leave=True)
 
     def get_total_cashflow_hours(self):
         projects = self.get_cashflow_projects()
@@ -187,6 +207,11 @@ class Month(models.Model):
 
     def get_unused_budget(self):
         return self.get_unused_hours() * self.year.rate
+
+    def get_vacation_days_for_employee(self, employee):
+        """Returns vacation days for given employee and this month."""
+        return self.get_free_time_for_employee(employee).exclude(
+            is_sick_leave=True).exclude(is_public_holiday=True)
 
     def get_weekdays(self):
         """Returns the number of weekdays of this month."""
@@ -396,3 +421,8 @@ class EmployeeProjectMonth(models.Model):
         """
         budget_hours = self.project_month.get_budget_hours()
         return budget_hours * (self.responsibility / 100.0)
+
+    def get_free_time(self):
+        """Returns the free time for this month and this employee."""
+        return self.project_month.month.get_free_time_for_employee(
+            self.employee)

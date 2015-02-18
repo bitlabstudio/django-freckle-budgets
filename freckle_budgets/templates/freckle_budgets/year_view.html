@@ -62,6 +62,11 @@
 
                         {% for employee in project_month.0.get_employees %}
                             <h2>{{ employee }}</h2>
+                            <p>
+                                {% get_employee_sick_leave_days employee project_month.0 as sick_leave_days %}
+                                {% get_employee_vacation_days employee project_month.0 as vacation_days %}
+                                {% trans "Sick leave:" %} {{ sick_leave_days.count }}, {% trans "Vacation:" %} {{ vacation_days.count}}
+                            </p>
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>

@@ -147,6 +147,12 @@ class MonthTestCase(TestCase):
         self.assertEqual(result.count(), 2, msg=(
             'Should return all employees that have projects in this month'))
 
+    def test_get_free_time_for_employee(self):
+        fixtures.create_employee_project_months(self)
+        result = self.month.get_free_time_for_employee(self.employee1)
+        self.assertEqual(result.count(), 3, msg=(
+            'Should return all FreeTime objects for this month and employee'))
+
     def test_get_investment_projects(self):
         fixtures.create_project_months(self)
         result = self.month.get_investment_projects()
@@ -154,6 +160,18 @@ class MonthTestCase(TestCase):
             'Should return all projects that have is_investment=True'))
         self.assertTrue(result[0].project.is_investment, msg=(
             'Should return all projects that have is_investment=True'))
+
+    def test_get_public_holidays_for_employee(self):
+        fixtures.create_employee_project_months(self)
+        result = self.month.get_public_holidays_for_employee(self.employee1)
+        self.assertEqual(result.count(), 1, msg=(
+            'Should return public holidays for given employee and month'))
+
+    def test_get_sick_leave_days_for_employee(self):
+        fixtures.create_employee_project_months(self)
+        result = self.month.get_sick_leave_days_for_employee(self.employee1)
+        self.assertEqual(result.count(), 1, msg=(
+            'Should return sick leave days for given employee and month'))
 
     def test_get_total_cashflow_hours(self):
         fixtures.create_project_months(self)
@@ -204,6 +222,12 @@ class MonthTestCase(TestCase):
         self.assertEqual(result, 160.0 * 100, msg=(
             'Should multiply the unused hours with the default rate for this'
             ' year.'))
+
+    def test_get_vacation_days_for_employee(self):
+        fixtures.create_employee_project_months(self)
+        result = self.month.get_vacation_days_for_employee(self.employee1)
+        self.assertEquals(result.count(), 1, msg=(
+            'Should return vacation days for the given employee and month'))
 
     def test_get_weekdays(self):
         fixtures.create_month(self)

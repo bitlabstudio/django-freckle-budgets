@@ -18,7 +18,7 @@ class EmployeeProjectMonthInline(admin.TabularInline):
 
 
 class FreeTimeAdmin(admin.ModelAdmin):
-    list_display = ['employee', 'day']
+    list_display = ['employee', 'day', 'is_sick_leave', 'is_public_holiday']
     list_filter = ['employee', ]
 
 

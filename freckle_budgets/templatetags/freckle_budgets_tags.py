@@ -5,7 +5,6 @@ import datetime
 from django import template
 from django.utils.timezone import now
 
-from .. import models
 from .. import utils
 
 
@@ -16,6 +15,18 @@ register = template.Library()
 def get_employee_project_months(employee, month):
     """Calls the same method on the ``Employee`` instance."""
     return employee.get_employee_project_months(month)
+
+
+@register.assignment_tag
+def get_employee_sick_leave_days(employee, month):
+    """Calls the sick leave days for the given employee and month."""
+    return month.get_sick_leave_days_for_employee(employee)
+
+
+@register.assignment_tag
+def get_employee_vacation_days(employee, month):
+    """Calls the vacation days for the given employee and month."""
+    return month.get_vacation_days_for_employee(employee)
 
 
 @register.assignment_tag
@@ -62,12 +73,8 @@ def get_hours_per_day(employee_project_month, hours_left):
     if now_.month != employee_project_month.project_month.month.month:
         return 0
 
-    month_end = datetime.date(
-        now_.year, now_.month, calendar.monthrange(now_.year, now_.month)[1])
-    free_time = models.FreeTime.objects.filter(
-        employee=employee_project_month.employee,
-        day__gte=now_, day__lte=month_end)
-
+    free_time = employee_project_month.get_free_time()
+    now_ = now()
     month_dates = calendar.Calendar(0).itermonthdates(now_.year, now_.month)
     remaining_work_days = 0
     for day in month_dates:
@@ -78,6 +85,8 @@ def get_hours_per_day(employee_project_month, hours_left):
         if day.weekday() < 5:
             remaining_work_days += 1
     remaining_work_days -= free_time.count()
+    if remaining_work_days <= 0:
+        return hours_left * 1.0
     return hours_left * 1.0 / remaining_work_days
 
 

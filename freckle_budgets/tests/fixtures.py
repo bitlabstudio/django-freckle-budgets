@@ -1,4 +1,6 @@
 """Test-fixtures for the freckle_budgets app."""
+import datetime
+
 from mixer.backend.django import mixer
 
 
@@ -44,11 +46,38 @@ def create_employee_project_months(cls):
         project_month=cls.project_month1_1, employee=cls.employee1,
         responsibility=100)
 
+    day = datetime.date(
+        cls.employee_project_month.project_month.month.year.year,
+        cls.employee_project_month.project_month.month.month, 1)
+    mixer.blend(
+        'freckle_budgets.FreeTime', employee=cls.employee1, day=day,
+        is_sick_leave=True, is_public_holiday=False)
+
+    day = datetime.date(
+        cls.employee_project_month.project_month.month.year.year,
+        cls.employee_project_month.project_month.month.month, 2)
+    mixer.blend(
+        'freckle_budgets.FreeTime', employee=cls.employee1, day=day,
+        is_sick_leave=False, is_public_holiday=True)
+
+    day = datetime.date(
+        cls.employee_project_month.project_month.month.year.year,
+        cls.employee_project_month.project_month.month.month, 5)
+    mixer.blend(
+        'freckle_budgets.FreeTime', employee=cls.employee1, day=day,
+        is_sick_leave=False, is_public_holiday=False)
+
     cls.employee2 = mixer.blend('freckle_budgets.Employee')
-    cls.employee_project_month = mixer.blend(
+    cls.employee_project_month1_2 = mixer.blend(
         'freckle_budgets.EmployeeProjectMonth',
         project_month=cls.project_month1_2, employee=cls.employee2,
         responsibility=50)
+    day = datetime.date(
+        cls.employee_project_month.project_month.month.year.year,
+        cls.employee_project_month.project_month.month.month, 2)
+    mixer.blend(
+        'freckle_budgets.FreeTime', employee=cls.employee2, day=day,
+        is_sick_leave=False, is_public_holiday=False)
 
 
 def get_api_response(cls):
