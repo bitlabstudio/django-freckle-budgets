@@ -141,6 +141,21 @@ class Month(models.Model):
                 'employee__pk', flat=True).distinct()
         return Employee.objects.filter(pk__in=employee_pks)
 
+    def get_employee_public_holiday_days(self, employee):
+        """Returns public holidays for given employee and this month."""
+        return self.get_free_time_for_employee(employee).filter(
+            is_public_holiday=True)
+
+    def get_employee_sick_leave_days(self, employee):
+        """Returns sick leave days for the given employee and this month."""
+        return self.get_free_time_for_employee(employee).filter(
+            is_sick_leave=True)
+
+    def get_employee_vacation_days(self, employee):
+        """Returns vacation days for given employee and this month."""
+        return self.get_free_time_for_employee(employee).exclude(
+            is_sick_leave=True).exclude(is_public_holiday=True)
+
     def get_free_time_for_employee(self, employee):
         """Returns the free times for this month and the given employee."""
         month_start = datetime.date(self.year.year, self.month, 1)
@@ -154,16 +169,6 @@ class Month(models.Model):
     def get_investment_projects(self):
         return ProjectMonth.objects.filter(
             month=self, project__is_investment=True).order_by('-budget', )
-
-    def get_public_holidays_for_employee(self, employee):
-        """Returns public holidays for given employee and this month."""
-        return self.get_free_time_for_employee(employee).filter(
-            is_public_holiday=True)
-
-    def get_sick_leave_days_for_employee(self, employee):
-        """Returns sick leave days for the given employee and this month."""
-        return self.get_free_time_for_employee(employee).filter(
-            is_sick_leave=True)
 
     def get_total_cashflow_hours(self):
         projects = self.get_cashflow_projects()
@@ -207,11 +212,6 @@ class Month(models.Model):
 
     def get_unused_budget(self):
         return self.get_unused_hours() * self.year.rate
-
-    def get_vacation_days_for_employee(self, employee):
-        """Returns vacation days for given employee and this month."""
-        return self.get_free_time_for_employee(employee).exclude(
-            is_sick_leave=True).exclude(is_public_holiday=True)
 
     def get_weekdays(self):
         """Returns the number of weekdays of this month."""

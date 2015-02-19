@@ -18,15 +18,21 @@ def get_employee_project_months(employee, month):
 
 
 @register.assignment_tag
+def get_employee_public_holiday_days(employee, month):
+    """Calls the public holiday days for the given employee and month."""
+    return month.get_employee_public_holiday_days(employee)
+
+
+@register.assignment_tag
 def get_employee_sick_leave_days(employee, month):
     """Calls the sick leave days for the given employee and month."""
-    return month.get_sick_leave_days_for_employee(employee)
+    return month.get_employee_sick_leave_days(employee)
 
 
 @register.assignment_tag
 def get_employee_vacation_days(employee, month):
     """Calls the vacation days for the given employee and month."""
-    return month.get_vacation_days_for_employee(employee)
+    return month.get_employee_vacation_days(employee)
 
 
 @register.assignment_tag

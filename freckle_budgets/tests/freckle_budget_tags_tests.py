@@ -29,6 +29,18 @@ class GetEmployeeProjectMonths(TestCase):
             ' instance directly'))
 
 
+class GetEmployeePublicHolidayDaysTestCase(TestCase):
+    """Tests for the ``GetEmployeePublicHolidayDays`` templatetag."""
+    longMessage = True
+
+    def test_tag(self):
+        fixtures.create_employee_project_months(self)
+        result = tags.get_employee_public_holiday_days(
+            self.employee1, self.month)
+        self.assertEqual(result.count(), 1, msg=(
+            'Should return public holiday days for given employee and month'))
+
+
 class GetEmployeeSickLeaveDaysTestCase(TestCase):
     """Tests for the ``GetEmployeeSickLeaveDays`` templatetag."""
     longMessage = True
