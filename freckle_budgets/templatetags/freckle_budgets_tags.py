@@ -62,9 +62,8 @@ def get_hours_left_for_employee(employee_project_month, entries_times):
             project_month.month.month][project_id][employee]
     except KeyError:
         return budget_hours
-    responsibility = employee_project_month.responsibility / 100.0
-    responsible_budget = (budget_hours * 60.0) * responsibility
-    return (responsible_budget - time_tracked) / 60.0
+    budget_minutes = budget_hours * 60.0
+    return (budget_minutes - time_tracked) / 60.0
 
 
 @register.assignment_tag

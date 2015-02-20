@@ -107,7 +107,7 @@ class GetHoursLeftForEmployeeTestCase(TestCase):
             # responsibility
             result = tags.get_hours_left_for_employee(
                 self.employee1_proj1_month1, entries_times)
-            self.assertEqual(round(result, 2), 3.52, msg=(
+            self.assertEqual(round(result, 2), 5.92, msg=(
                 'Should substract the tracked hours from the total budget'
                 ' hours for this employee'))
 
