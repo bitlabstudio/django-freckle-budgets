@@ -142,14 +142,14 @@ class GetHoursPerDayTestCase(TestCase):
                 ' given project month'))
 
         with patch('freckle_budgets.templatetags.freckle_budgets_tags.now') as now_mock:  # NOQA
-            now_mock.return_value = datetime.date(2015, 1, 15)
+            now_mock.return_value = datetime.date(2015, 1, 1)
             result = tags.get_hours_per_day(self.employee_project_month, 1)
-            self.assertEqual(round(result, 2), 0.11, msg=(
+            self.assertEqual(round(result, 2), 0.05, msg=(
                 'Should return the hours needed to fulfill the budget by the'
                 ' end the month.'))
 
         with patch('freckle_budgets.templatetags.freckle_budgets_tags.now') as now_mock:  # NOQA
-            now_mock.return_value = datetime.date(2015, 1, 31)
+            now_mock.return_value = datetime.date(2015, 1, 29)
             result = tags.get_hours_per_day(self.employee_project_month, 1)
             self.assertEqual(round(result, 2), 1.00, msg=(
                 'Should return the hours needed to fulfill the budget by the'

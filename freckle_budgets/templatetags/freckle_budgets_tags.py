@@ -80,6 +80,7 @@ def get_hours_per_day(employee_project_month, hours_left):
         return 0
 
     free_time = employee_project_month.get_free_time()
+    free_time = free_time.filter(day__gte=now_)
     now_ = now()
     month_dates = calendar.Calendar(0).itermonthdates(now_.year, now_.month)
     remaining_work_days = 0
@@ -91,7 +92,7 @@ def get_hours_per_day(employee_project_month, hours_left):
         if day.weekday() < 5:
             remaining_work_days += 1
     remaining_work_days -= free_time.count()
-    if remaining_work_days <= 0:
+    if remaining_work_days <= 0:  # pragma: no cover
         return hours_left * 1.0
     return hours_left * 1.0 / remaining_work_days
 

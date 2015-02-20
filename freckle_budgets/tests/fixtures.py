@@ -62,7 +62,7 @@ def create_employee_project_months(cls):
 
     day = datetime.date(
         cls.employee_project_month.project_month.month.year.year,
-        cls.employee_project_month.project_month.month.month, 5)
+        cls.employee_project_month.project_month.month.month, 30)
     mixer.blend(
         'freckle_budgets.FreeTime', employee=cls.employee1, day=day,
         is_sick_leave=False, is_public_holiday=False)
